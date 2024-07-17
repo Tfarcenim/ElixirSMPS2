@@ -1,6 +1,6 @@
-package com.example.examplemod.mixin;
+package tfar.elixirsmps2.mixin;
 
-import com.example.examplemod.CommonClass;
+import tfar.elixirsmps2.ElixirSMPS2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -10,11 +10,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TitleScreen.class)
 public class MixinTitleScreen {
-    
+
     @Inject(at = @At("HEAD"), method = "init()V")
     private void init(CallbackInfo info) {
-        
-        CommonClass.LOG.info("This line is printed by an example mod mixin from Fabric!");
-        CommonClass.LOG.info("MC Version: {}", Minecraft.getInstance().getVersionType());
+
+        ElixirSMPS2.LOG.info("This line is printed by an example mod mixin from Forge!");
+        ElixirSMPS2.LOG.info("MC Version: {}", Minecraft.getInstance().getVersionType());
     }
 }

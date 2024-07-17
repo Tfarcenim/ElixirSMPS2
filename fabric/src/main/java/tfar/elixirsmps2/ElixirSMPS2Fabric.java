@@ -1,8 +1,8 @@
-package com.example.examplemod;
+package tfar.elixirsmps2;
 
 import net.fabricmc.api.ModInitializer;
 
-public class ExampleMod implements ModInitializer {
+public class ElixirSMPS2Fabric implements ModInitializer {
     
     @Override
     public void onInitialize() {
@@ -12,7 +12,7 @@ public class ExampleMod implements ModInitializer {
         // project.
 
         // Use Fabric to bootstrap the Common mod.
-        CommonClass.LOG.info("Hello Fabric world!");
-        CommonClass.init();
+        ElixirSMPS2.LOG.info("Hello Fabric world!");
+        ElixirSMPS2.init();
     }
 }

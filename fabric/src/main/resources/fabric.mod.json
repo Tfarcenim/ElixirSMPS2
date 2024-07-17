@@ -16,7 +16,7 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.example.examplemod.ExampleMod"
+          "tfar.elixirsmps2.ElixirSMPS2Fabric"
         ]
     },
     "mixins": [

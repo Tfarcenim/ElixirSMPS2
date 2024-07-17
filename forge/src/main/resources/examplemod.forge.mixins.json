@@ -7,7 +7,7 @@
     "mixins": [
     ],
     "client": [
-        "MixinTitleScreen"
+      "tfar.elixirsmps2.mixin.MixinTitleScreen"
     ],
     "server": [
     ],
