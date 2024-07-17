@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "d": {
+      "item": "minecraft:diamond_block"
+    },
+    "e": {
+      "item": "minecraft:emerald_block"
+    },
+    "g": {
+      "item": "minecraft:gold_block"
+    },
+    "n": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "pattern": [
+    "ded",
+    "gng",
+    "ded"
+  ],
+  "result": {
+    "item": "elixirsmps2:effect_reroll"
+  },
+  "show_notification": true
+}

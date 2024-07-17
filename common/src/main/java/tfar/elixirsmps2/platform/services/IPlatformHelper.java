@@ -1,5 +1,7 @@
 package tfar.elixirsmps2.platform.services;
 
+import net.minecraft.core.Registry;
+
 public interface IPlatformHelper {
 
     /**
@@ -33,4 +35,8 @@ public interface IPlatformHelper {
 
         return isDevelopmentEnvironment() ? "development" : "production";
     }
+
+    <F> void registerAll(Class<?> clazz, Registry<? super F> registry, Class<F> filter);
+
+
 }

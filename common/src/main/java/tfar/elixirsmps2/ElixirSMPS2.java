@@ -1,5 +1,12 @@
 package tfar.elixirsmps2;
 
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import tfar.elixirsmps2.init.ModItems;
 import tfar.elixirsmps2.platform.Services;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Items;
@@ -20,6 +27,16 @@ public class ElixirSMPS2 {
     // write the majority of your code here and load it from your loader specific projects. This example has some
     // code that gets invoked by the entry point of the loader specific projects.
     public static void init() {
+        Services.PLATFORM.registerAll(ModItems.class, BuiltInRegistries.ITEM, Item.class);
+    }
 
+    public static ResourceLocation id(String path) {
+        return new ResourceLocation(MOD_ID,path);
+    }
+
+    public static void onDeath(LivingEntity living, DamageSource damageSource) {
+        if (living instanceof ServerPlayer serverPlayer) {
+
+        }
     }
 }
