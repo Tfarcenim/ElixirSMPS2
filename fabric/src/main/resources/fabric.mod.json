@@ -17,7 +17,8 @@
     "entrypoints": {
         "main": [
           "tfar.elixirsmps2.ElixirSMPS2Fabric"
-        ]
+        ],
+        "client": ["tfar.elixirsmps2.client.ModClientFabric"]
     },
     "mixins": [
         "${mod_id}.mixins.json",

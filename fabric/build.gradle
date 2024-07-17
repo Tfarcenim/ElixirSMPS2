@@ -7,6 +7,9 @@ plugins {
 base {
     archivesName = "${mod_name}-fabric-${minecraft_version}"
 }
+
+sourceSets.main.resources.srcDirs += project(":common").file('src/generated/resources')
+
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered() {

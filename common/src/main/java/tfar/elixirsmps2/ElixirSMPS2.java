@@ -1,15 +1,15 @@
 package tfar.elixirsmps2;
 
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import tfar.elixirsmps2.init.ModItems;
 import tfar.elixirsmps2.platform.Services;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.Items;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,16 @@ public class ElixirSMPS2 {
 
     public static void onDeath(LivingEntity living, DamageSource damageSource) {
         if (living instanceof ServerPlayer serverPlayer) {
-
+            ItemStack stack = ModItems.ELIXIR_POINT.getDefaultInstance();
+            ItemEntity itemEntity = new ItemEntity(living.level(), living.getX(), living.getY(), living.getZ(), stack);
+            itemEntity.setUnlimitedLifetime();
+            living.level().addFreshEntity(itemEntity);
+            PlayerDuck.of(serverPlayer).addElixirPoints(-1);
         }
     }
+
+    public static void onClone(ServerPlayer originalPlayer,ServerPlayer newPlayer,boolean alive) {
+        PlayerDuck.of(originalPlayer).copyTo(newPlayer);
+    }
+
 }
