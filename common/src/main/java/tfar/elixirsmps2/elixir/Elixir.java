@@ -12,24 +12,15 @@ import tfar.elixirsmps2.PlayerDuck;
 public class Elixir {
     private final String name;
     protected final int[] cooldowns;
-
-//Ep -4: Weakness 2
-//Ep -3: Weakness 1
-//Ep -2: No Effect
-//Ep -1: Strength 1
-//Ep 0: Strength 2
-//Ep 1: Effect enemy with Weakness for 20 Secs. Cooldown. 1 Minute
-//Ep 2: Remove Weakness and Slowness from self(Only if you have the effect) Cooldown 2 min.
-//Ep 3: Strength 3 for one hit. Cooldown 2 min.
-//Ep 4: Remove strength from all enemies. Cooldown 3 Mins.
-//Ep 5: Temp disable other peoples Elixirs for 15 secs. Only disables 0 to 5 ep. (Cooldown 5 Mins.)
+    protected final MobEffect good;
+    protected final MobEffect bad;
 
 
-
-
-    public Elixir(String name,int[] cooldowns) {
+    public Elixir(String name, int[] cooldowns, MobEffect good, MobEffect bad) {
         this.name = name;
         this.cooldowns = cooldowns;
+        this.good = good;
+        this.bad = bad;
     }
 
     public String getName() {
@@ -66,8 +57,12 @@ public class Elixir {
         return false;
     }
 
-    protected static void addMobEffect(Player player, MobEffect mobEffect, int i) {
-        player.addEffect(new MobEffectInstance(mobEffect,MobEffectInstance.INFINITE_DURATION,i,false,false,true));
+    protected static void addMobEffect(Player player, MobEffect mobEffect, int amplifier) {
+        player.addEffect(new MobEffectInstance(mobEffect,MobEffectInstance.INFINITE_DURATION,amplifier,false,false,true));
+    }
+
+    protected static void addTempMobEffect(Player player, MobEffect mobEffect, int amplifier,int time) {
+        player.addEffect(new MobEffectInstance(mobEffect,time,amplifier,false,false,true));
     }
 
     protected void notifyAbilityHit(ServerPlayer affected,int level) {

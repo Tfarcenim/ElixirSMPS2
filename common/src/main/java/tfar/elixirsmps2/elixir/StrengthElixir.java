@@ -1,6 +1,7 @@
 package tfar.elixirsmps2.elixir;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -11,8 +12,8 @@ import tfar.elixirsmps2.PlayerDuck;
 import java.util.List;
 
 public class StrengthElixir extends Elixir {
-    public StrengthElixir(String name,int[] cooldowns) {
-        super(name,cooldowns);
+    public StrengthElixir(String name, int[] cooldowns, MobEffect good,MobEffect bad) {
+        super(name,cooldowns,good,bad);
     }
 
 
@@ -33,25 +34,25 @@ public class StrengthElixir extends Elixir {
         if (!ElixirSMPS2.ENABLED) return;
         int elixirPoints = PlayerDuck.of(player).getElixirPoints();
         if (elixirPoints < 0) {
-            player.removeEffect(MobEffects.DAMAGE_BOOST);
+            player.removeEffect(good);
             if (elixirPoints < -3) {
-                addMobEffect(player,MobEffects.WEAKNESS,1);
+                addMobEffect(player,bad,1);
             } else {
-                player.removeEffect(MobEffects.WEAKNESS);
+                player.removeEffect(bad);
                 switch (elixirPoints) {
                     case -3 -> {
-                        addMobEffect(player,MobEffects.WEAKNESS,0);
+                        addMobEffect(player,bad,0);
                     }
                     case -2 -> {
                     }
                     case -1 -> {
-                        addMobEffect(player,MobEffects.DAMAGE_BOOST,0);
+                        addMobEffect(player,good,0);
                     }
                 }
             }
         } else {
-            player.removeEffect(MobEffects.WEAKNESS);
-            addMobEffect(player,MobEffects.DAMAGE_BOOST, 1);
+            player.removeEffect(bad);
+            addMobEffect(player,good, 1);
         }
     }
 
@@ -59,28 +60,29 @@ public class StrengthElixir extends Elixir {
     protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
         switch (key) {
             case 0 -> {
-                addMobEffect(player,MobEffects.DAMAGE_BOOST,2);
+                addMobEffect(player,good,1);
             }
             case 1 -> {
                 List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
                 for (Player otherPlayer:nearby) {
-                    otherPlayer.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,20 * 20,0));
+                    otherPlayer.addEffect(new MobEffectInstance(bad,20 * 20,0));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 2 -> {
-                boolean didSomething = player.removeEffect(MobEffects.WEAKNESS);
+                boolean didSomething = player.removeEffect(bad);
                 if (player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
                     didSomething = true;
                 }
                 return didSomething;
             }
             case 3 -> {
-                addMobEffect(player,MobEffects.DAMAGE_BOOST,2);
+                addMobEffect(player,good,2);
                 PlayerDuck playerDuck = PlayerDuck.of(player);
                 playerDuck.setOnNextHit(player1 -> {
-                    player1.removeEffect(MobEffects.DAMAGE_BOOST);
-                    addMobEffect(player1,MobEffects.DAMAGE_BOOST,1);
+                    player1.removeEffect(good);
+                    addMobEffect(player1,good,1);
+                    playerDuck.setOnNextHit(player2 -> {});
                     playerDuck.getCooldowns()[3] = cooldowns[3];
                 });
                 return false;
@@ -89,7 +91,7 @@ public class StrengthElixir extends Elixir {
                 List<ServerPlayer> allPlayers = player.server.getPlayerList().getPlayers();
                 for (ServerPlayer otherPlayer:allPlayers) {
                     if (otherPlayer == player) continue;
-                    otherPlayer.removeEffect(MobEffects.DAMAGE_BOOST);
+                    otherPlayer.removeEffect(good);
                     notifyAbilityHit(otherPlayer,key);
                 }
             }
@@ -124,11 +126,10 @@ public class StrengthElixir extends Elixir {
     @Override
     public void disable(Player player, boolean positiveOnly) {
         PlayerDuck playerDuck = PlayerDuck.of(player);
-        player.removeEffect(MobEffects.DAMAGE_BOOST);
+        player.removeEffect(good);
         playerDuck.setOnNextHit(player1 -> {});
         if (!positiveOnly) {
-            player.removeEffect(MobEffects.WEAKNESS);
-            player.removeEffect(MobEffects.DAMAGE_BOOST);
+            player.removeEffect(bad);
         }
     }
 }

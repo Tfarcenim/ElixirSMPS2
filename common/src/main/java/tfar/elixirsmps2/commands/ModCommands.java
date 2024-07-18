@@ -13,8 +13,10 @@ import tfar.elixirsmps2.ElixirSMPS2;
 import tfar.elixirsmps2.PlayerDuck;
 import tfar.elixirsmps2.elixir.Elixir;
 import tfar.elixirsmps2.elixir.Elixirs;
+import tfar.elixirsmps2.network.S2CCooldownPacket;
 import tfar.elixirsmps2.platform.Services;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -24,6 +26,7 @@ public class ModCommands {
     public static final String ELIXIR_STOP = "elixir.stop";
     public static final String ELIXIR_EP = "elixir.ep";
     public static final String ELIXIR_EFFECT = "elixir.effect";
+    public static final String ELIXIR_COOLDOWN = "elixir.cooldown";
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("elixir")
@@ -48,6 +51,10 @@ public class ModCommands {
                         .then(Commands.literal("get").then(Commands.argument("player", EntityArgument.player()).executes(ModCommands::effectGet)))
                         .then(Commands.literal("reroll").then(Commands.argument("player", EntityArgument.player()).executes(ModCommands::reroll)))
                 )
+                .then(Commands.literal("cooldown")
+                        .requires(requires(ELIXIR_COOLDOWN,2))
+                        .then(Commands.literal("reset").then(Commands.argument("player", EntityArgument.player()).executes(ModCommands::resetCooldowns)))
+                )
         );
     }
 
@@ -56,11 +63,12 @@ public class ModCommands {
         List<ServerPlayer> players = ctx.getSource().getServer().getPlayerList().getPlayers();
         for (ServerPlayer player : players) {
             PlayerDuck playerDuck = PlayerDuck.of(player);
-            if (playerDuck.getElixir() == null) {
-                Elixir elixir = Elixirs.getRandom(player.getRandom());
+            Elixir elixir = playerDuck.getElixir();
+            if (elixir == null) {
+                elixir = Elixirs.getRandom(player.getRandom());
                 playerDuck.setElixir(elixir);
-                elixir.applyPassiveEffects(player);
             }
+            elixir.applyPassiveEffects(player);
         }
         return players.size();
     }
@@ -122,6 +130,15 @@ public class ModCommands {
         }
         playerDuck.setElixir(next);
         next.applyPassiveEffects(player);
+        return 1;
+    }
+
+    public static int resetCooldowns(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
+        PlayerDuck playerDuck = PlayerDuck.of(player);
+        int[] cooldowns = playerDuck.getCooldowns();
+        Arrays.fill(cooldowns, 0);
+        Services.PLATFORM.sendToClient(new S2CCooldownPacket(cooldowns),player);
         return 1;
     }
 

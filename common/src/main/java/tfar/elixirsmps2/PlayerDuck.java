@@ -22,6 +22,16 @@ public interface PlayerDuck {
     int[] getCooldowns();
     Consumer<Player> getOnNextHit();
     void setOnNextHit(Consumer<Player> onNextHit);
+
+    boolean isShouldBurnOnHit();
+    void setShouldBurnOnHit(boolean shouldBurnOnHit);
+    default void toggleShouldBurnOnHit() {
+        setShouldBurnOnHit(!isShouldBurnOnHit());
+    }
+
+    double getFireDamageMultiplier();
+    void setFireDamageMultiplier(double multiplier);
+
     default void copyTo(Player newPlayer) {
         PlayerDuck newPlayerDuck = of(newPlayer);
         newPlayerDuck.setElixirPointsNoUpdate(getElixirPoints());

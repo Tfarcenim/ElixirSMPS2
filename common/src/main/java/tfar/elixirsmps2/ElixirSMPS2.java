@@ -4,9 +4,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import tfar.elixirsmps2.commands.ModCommands;
@@ -74,6 +77,33 @@ public class ElixirSMPS2 {
                 elixir.applyPassiveEffects(newPlayer);
             }
         }
+    }
+
+    public static void afterDamage(LivingEntity livingEntity, DamageSource source) {
+        Entity attacker = source.getEntity();
+        if (livingEntity instanceof Player player) {
+            PlayerDuck playerDuck = PlayerDuck.of(player);
+
+        }
+
+        if (attacker instanceof Player player) {
+            PlayerDuck playerDuck = PlayerDuck.of(player);
+            if (playerDuck.isShouldBurnOnHit()) {
+                livingEntity.setSecondsOnFire(2);
+            }
+            playerDuck.getOnNextHit().accept(player);
+        }
+    }
+
+    public static float modifyDamage(LivingEntity livingEntity, DamageSource source, float amount) {
+        Entity attacker = source.getEntity();
+        if (livingEntity instanceof Player player) {
+            PlayerDuck playerDuck = PlayerDuck.of(player);
+            if (source.is(DamageTypeTags.IS_FIRE)) {
+                amount *= playerDuck.getFireDamageMultiplier();
+            }
+        }
+        return amount;
     }
 
 }

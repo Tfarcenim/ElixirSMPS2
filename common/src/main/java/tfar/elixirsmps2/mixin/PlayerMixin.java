@@ -31,6 +31,10 @@ public abstract class PlayerMixin extends LivingEntity implements PlayerDuck {
     int[] cooldowns = new int[6];
     @Unique
     Consumer<Player> onNextHit = player -> {};
+    @Unique
+    boolean shouldBurnOnHit;
+    @Unique
+    double damageMultiplier = 1;
 
     protected PlayerMixin(EntityType<? extends LivingEntity> $$0, Level $$1) {
         super($$0, $$1);
@@ -80,8 +84,28 @@ public abstract class PlayerMixin extends LivingEntity implements PlayerDuck {
     }
 
     @Override
+    public boolean isShouldBurnOnHit() {
+        return shouldBurnOnHit;
+    }
+
+    @Override
+    public void setShouldBurnOnHit(boolean shouldBurnOnHit) {
+        this.shouldBurnOnHit = shouldBurnOnHit;
+    }
+
+    @Override
     public int[] getCooldowns() {
         return cooldowns;
+    }
+
+    @Override
+    public double getFireDamageMultiplier() {
+        return damageMultiplier;
+    }
+
+    @Override
+    public void setFireDamageMultiplier(double multiplier) {
+        damageMultiplier = multiplier;
     }
 
     @Inject(method = "tick",at = @At("HEAD"))
