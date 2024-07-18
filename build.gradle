@@ -7,6 +7,7 @@ plugins {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'idea'
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(17)
     java.withSourcesJar()
@@ -82,6 +83,14 @@ subprojects {
             expand expandProps
         }
         inputs.properties(expandProps)
+    }
+
+    // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+    idea {
+        module {
+            downloadSources = true
+            downloadJavadoc = true
+        }
     }
 
 

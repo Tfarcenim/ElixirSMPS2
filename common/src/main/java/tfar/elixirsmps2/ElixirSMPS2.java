@@ -2,11 +2,15 @@ package tfar.elixirsmps2;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import tfar.elixirsmps2.commands.ModCommands;
+import tfar.elixirsmps2.elixir.Elixir;
 import tfar.elixirsmps2.init.ModItems;
 import tfar.elixirsmps2.platform.Services;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,6 +26,10 @@ public class ElixirSMPS2 {
     public static final String MOD_ID = "elixirsmps2";
     public static final String MOD_NAME = "ElixirSMPS2";
     public static final Logger LOG = LoggerFactory.getLogger(MOD_NAME);
+
+    public static final SoundEvent ABILITY_USED = SoundEvents.SNOWBALL_THROW;
+
+    public static boolean ENABLED = true;
 
     // The loader specific projects are able to import and use any code from the common project. This allows you to
     // write the majority of your code here and load it from your loader specific projects. This example has some
@@ -46,6 +54,26 @@ public class ElixirSMPS2 {
 
     public static void onClone(ServerPlayer originalPlayer,ServerPlayer newPlayer,boolean alive) {
         PlayerDuck.of(originalPlayer).copyTo(newPlayer);
+    }
+
+    public static void onLogin(ServerPlayer player) {
+        if (ENABLED) {
+            PlayerDuck playerDuck = PlayerDuck.of(player);
+            Elixir elixir = playerDuck.getElixir();
+            if (elixir == null) {
+                ModCommands.reroll(player);
+            }
+        }
+    }
+
+    public static void onAfterRespawn(ServerPlayer originalPlayer,ServerPlayer newPlayer,boolean alive) {
+        if (ElixirSMPS2.ENABLED) {
+            PlayerDuck playerDuck = PlayerDuck.of(newPlayer);
+            Elixir elixir = playerDuck.getElixir();
+            if (elixir != null) {
+                elixir.applyPassiveEffects(newPlayer);
+            }
+        }
     }
 
 }
