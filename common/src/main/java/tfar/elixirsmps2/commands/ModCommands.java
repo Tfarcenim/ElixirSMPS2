@@ -2,6 +2,7 @@ package tfar.elixirsmps2.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
@@ -47,12 +48,15 @@ public class ModCommands {
                                                 .executes(ModCommands::epSet))))
                 )
                 .then(Commands.literal("effect")
-                        .requires(requires(ELIXIR_EFFECT,2))
+                        .requires(requires(ELIXIR_EFFECT, 2))
                         .then(Commands.literal("get").then(Commands.argument("player", EntityArgument.player()).executes(ModCommands::effectGet)))
+                        .then(Commands.literal("set").then(Commands.argument("player", EntityArgument.player())
+                                .then(Commands.argument("elixir", StringArgumentType.string()).executes(ModCommands::effectSet))))
+
                         .then(Commands.literal("reroll").then(Commands.argument("player", EntityArgument.player()).executes(ModCommands::reroll)))
                 )
                 .then(Commands.literal("cooldown")
-                        .requires(requires(ELIXIR_COOLDOWN,2))
+                        .requires(requires(ELIXIR_COOLDOWN, 2))
                         .then(Commands.literal("reset").then(Commands.argument("player", EntityArgument.player()).executes(ModCommands::resetCooldowns)))
                 )
         );
@@ -87,7 +91,7 @@ public class ModCommands {
 
     public static int epAdd(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
-        int points = IntegerArgumentType.getInteger(ctx,"ep");
+        int points = IntegerArgumentType.getInteger(ctx, "ep");
         PlayerDuck.of(player).addElixirPoints(points);
         return 1;
     }
@@ -95,22 +99,32 @@ public class ModCommands {
     public static int epGet(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
         int points = PlayerDuck.of(player).getElixirPoints();
-        ctx.getSource().sendSuccess(() -> Component.empty().append(player.getName()).append(Component.literal(" has "+points+" elixir points")),false);
+        ctx.getSource().sendSuccess(() -> Component.empty().append(player.getName()).append(Component.literal(" has " + points + " elixir points")), false);
         return 1;
     }
 
     public static int epSet(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
-        int points = IntegerArgumentType.getInteger(ctx,"ep");
+        int points = IntegerArgumentType.getInteger(ctx, "ep");
         PlayerDuck.of(player).setElixirPoints(points);
         return 1;
     }
+
+    public static int effectSet(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
+        Elixir elixir = Elixirs.ELIXIR_MAP.get(StringArgumentType.getString(ctx,"elixir"));
+        PlayerDuck playerDuck = PlayerDuck.of(player);
+        playerDuck.setElixir(elixir);
+        elixir.applyPassiveEffects(player);
+        return 1;
+    }
+
 
     public static int effectGet(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
         PlayerDuck playerDuck = PlayerDuck.of(player);
         Elixir current = playerDuck.getElixir();
-        ctx.getSource().sendSuccess(() -> Component.empty().append(player.getName()).append(Component.literal(" has "+current+" elixir")),false);
+        ctx.getSource().sendSuccess(() -> Component.empty().append(player.getName()).append(Component.literal(" has " + current + " elixir")), false);
         return 1;
     }
 
@@ -138,7 +152,7 @@ public class ModCommands {
         PlayerDuck playerDuck = PlayerDuck.of(player);
         int[] cooldowns = playerDuck.getCooldowns();
         Arrays.fill(cooldowns, 0);
-        Services.PLATFORM.sendToClient(new S2CCooldownPacket(cooldowns),player);
+        Services.PLATFORM.sendToClient(new S2CCooldownPacket(cooldowns), player);
         return 1;
     }
 

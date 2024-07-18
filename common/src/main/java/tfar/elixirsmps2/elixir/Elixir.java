@@ -1,13 +1,19 @@
 package tfar.elixirsmps2.elixir;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import tfar.elixirsmps2.ElixirSMPS2;
 import tfar.elixirsmps2.PlayerDuck;
+import tfar.elixirsmps2.mixin.LivingEntityAccess;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class Elixir {
     private final String name;
@@ -73,4 +79,20 @@ public class Elixir {
         player.playNotifySound(ElixirSMPS2.ABILITY_USED, SoundSource.PLAYERS,1,1);
     }
 
+    protected static List<Player> getNearbyPlayers(ServerPlayer player) {
+       return player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
+    }
+
+    protected static void removeAllPositiveEffects(Player player) {
+        Iterator<MobEffectInstance> iterator = player.getActiveEffectsMap().values().iterator();
+
+        while (iterator.hasNext()) {
+            MobEffectInstance effect = iterator.next();
+            if (effect.getEffect().isBeneficial()) {
+                // if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Remove(this, effect))) continue;
+                ((LivingEntityAccess) player).$onEffectRemoved(effect);
+                iterator.remove();
+            }
+        }
+    }
 }

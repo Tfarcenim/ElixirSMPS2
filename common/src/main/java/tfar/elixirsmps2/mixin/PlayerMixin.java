@@ -68,7 +68,7 @@ public abstract class PlayerMixin extends LivingEntity implements PlayerDuck {
     @Override
     public void setElixir(Elixir elixir) {
         if (this.elixir != null){
-            elixir.disable((Player) (Object)this,false);
+            this.elixir.disable((Player) (Object)this,false);
         }
         this.elixir = elixir;
     }

@@ -6,6 +6,8 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -14,7 +16,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import tfar.elixirsmps2.commands.ModCommands;
 import tfar.elixirsmps2.elixir.Elixir;
+import tfar.elixirsmps2.elixir.Elixirs;
 import tfar.elixirsmps2.init.ModItems;
+import tfar.elixirsmps2.init.ModMobEffects;
 import tfar.elixirsmps2.platform.Services;
 import net.minecraft.core.registries.BuiltInRegistries;
 import org.slf4j.Logger;
@@ -39,6 +43,7 @@ public class ElixirSMPS2 {
     // code that gets invoked by the entry point of the loader specific projects.
     public static void init() {
         Services.PLATFORM.registerAll(ModItems.class, BuiltInRegistries.ITEM, Item.class);
+        Services.PLATFORM.registerAll(ModMobEffects.class, BuiltInRegistries.MOB_EFFECT, MobEffect.class);
     }
 
     public static ResourceLocation id(String path) {
@@ -46,6 +51,7 @@ public class ElixirSMPS2 {
     }
 
     public static void onDeath(LivingEntity living, DamageSource damageSource) {
+        if (!ENABLED)return;
         if (living instanceof ServerPlayer serverPlayer) {
             ItemStack stack = ModItems.ELIXIR_POINT.getDefaultInstance();
             ItemEntity itemEntity = new ItemEntity(living.level(), living.getX(), living.getY(), living.getZ(), stack);
@@ -70,7 +76,7 @@ public class ElixirSMPS2 {
     }
 
     public static void onAfterRespawn(ServerPlayer originalPlayer,ServerPlayer newPlayer,boolean alive) {
-        if (ElixirSMPS2.ENABLED) {
+        if (ENABLED) {
             PlayerDuck playerDuck = PlayerDuck.of(newPlayer);
             Elixir elixir = playerDuck.getElixir();
             if (elixir != null) {
@@ -80,6 +86,7 @@ public class ElixirSMPS2 {
     }
 
     public static void afterDamage(LivingEntity livingEntity, DamageSource source) {
+        if (!ENABLED) return;
         Entity attacker = source.getEntity();
         if (livingEntity instanceof Player player) {
             PlayerDuck playerDuck = PlayerDuck.of(player);
@@ -96,11 +103,18 @@ public class ElixirSMPS2 {
     }
 
     public static float modifyDamage(LivingEntity livingEntity, DamageSource source, float amount) {
+        if (!ENABLED)return amount;
         Entity attacker = source.getEntity();
         if (livingEntity instanceof Player player) {
             PlayerDuck playerDuck = PlayerDuck.of(player);
             if (source.is(DamageTypeTags.IS_FIRE)) {
                 amount *= playerDuck.getFireDamageMultiplier();
+            }
+            if (source.is(DamageTypes.DROWN)) {
+                Elixir elixir = playerDuck.getElixir();
+                if (elixir == Elixirs.WATER_BREATHING && playerDuck.getElixirPoints() < -3) {
+                    amount *=2;
+                }
             }
         }
         return amount;

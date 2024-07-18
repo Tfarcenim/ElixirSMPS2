@@ -125,6 +125,7 @@ public class FireResistanceElixir extends Elixir {
         playerDuck.setShouldBurnOnHit(false);
         player.removeEffect(good);
         if (!positiveOnly) {
+            playerDuck.setFireDamageMultiplier(1);
             player.removeEffect(bad);
         }
     }
