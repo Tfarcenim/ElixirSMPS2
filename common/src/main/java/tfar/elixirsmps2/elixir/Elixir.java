@@ -1,15 +1,19 @@
 package tfar.elixirsmps2.elixir;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import tfar.elixirsmps2.ElixirSMPS2;
 import tfar.elixirsmps2.PlayerDuck;
+import tfar.elixirsmps2.init.ModMobEffects;
 import tfar.elixirsmps2.mixin.LivingEntityAccess;
 
 import java.util.Iterator;
@@ -43,6 +47,7 @@ public class Elixir {
     public final void attemptApplyActiveEffect(ServerPlayer player, int key) {
         if (!ElixirSMPS2.ENABLED)return;
         if (key > 5) return;
+        if (player.hasEffect(ModMobEffects.STUNNED))return;
         PlayerDuck playerDuck = PlayerDuck.of(player);
         int elixirPoints = playerDuck.getElixirPoints();
         if (elixirPoints < key) return;
@@ -67,8 +72,8 @@ public class Elixir {
         player.addEffect(new MobEffectInstance(mobEffect,MobEffectInstance.INFINITE_DURATION,amplifier,false,false,true));
     }
 
-    protected static void addTempMobEffect(Player player, MobEffect mobEffect, int amplifier,int time) {
-        player.addEffect(new MobEffectInstance(mobEffect,time,amplifier,false,false,true));
+    protected static void addTempMobEffect(LivingEntity living, MobEffect mobEffect, int amplifier, int time) {
+        living.addEffect(new MobEffectInstance(mobEffect,time,amplifier,false,false,true));
     }
 
     protected void notifyAbilityHit(ServerPlayer affected,int level) {
@@ -83,16 +88,21 @@ public class Elixir {
        return player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
     }
 
-    protected static void removeAllPositiveEffects(Player player) {
+    protected static void removeSomeEffects(Player player, MobEffectCategory category) {
         Iterator<MobEffectInstance> iterator = player.getActiveEffectsMap().values().iterator();
 
         while (iterator.hasNext()) {
             MobEffectInstance effect = iterator.next();
-            if (effect.getEffect().isBeneficial()) {
+            if (effect.getEffect().getCategory() == category) {
                 // if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Remove(this, effect))) continue;
                 ((LivingEntityAccess) player).$onEffectRemoved(effect);
                 iterator.remove();
             }
         }
+    }
+
+    protected static void push(Player player, Vec3 dir) {
+        player.setDeltaMovement(player.getDeltaMovement().add(dir));
+        player.hurtMarked = true;
     }
 }

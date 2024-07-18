@@ -3,10 +3,12 @@ package tfar.elixirsmps2.elixir;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import tfar.elixirsmps2.ElixirSMPS2;
 import tfar.elixirsmps2.PlayerDuck;
 import tfar.elixirsmps2.init.ModMobEffects;
@@ -84,7 +86,7 @@ public class HasteElixir extends Elixir{
                         for (int x = -2; x < 3;x++) {
                             BlockPos pos = origin.offset(x,y,z);
                             BlockState state = player.level().getBlockState(pos);
-                            if (state.canBeReplaced()) {
+                            if (state.canBeReplaced() && !player.getBoundingBox().intersects(new AABB(pos))) {
                                 player.level().setBlock(pos,Blocks.STONE.defaultBlockState(),3);
                             }
                         }
@@ -97,7 +99,7 @@ public class HasteElixir extends Elixir{
             case 5 -> {
                 List<Player> nearby = getNearbyPlayers(player);
                 for (Player otherPlayer:nearby) {
-                    removeAllPositiveEffects(otherPlayer);
+                    removeSomeEffects(otherPlayer, MobEffectCategory.BENEFICIAL);
                     PlayerDuck otherPlayerDuck = PlayerDuck.of(otherPlayer);
                     otherPlayerDuck.getCooldowns()[0] = Math.max(otherPlayerDuck.getCooldowns()[0],15 * 20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);

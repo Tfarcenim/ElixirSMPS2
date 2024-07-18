@@ -8,12 +8,16 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.trading.MerchantOffer;
 import tfar.elixirsmps2.commands.ModCommands;
 import tfar.elixirsmps2.elixir.Elixir;
 import tfar.elixirsmps2.elixir.Elixirs;
@@ -90,7 +94,11 @@ public class ElixirSMPS2 {
         Entity attacker = source.getEntity();
         if (livingEntity instanceof Player player) {
             PlayerDuck playerDuck = PlayerDuck.of(player);
-
+            if (playerDuck.getElixir() == Elixirs.INVISIBILITY) {
+                if (playerDuck.getElixirPoints() <= -2){
+                    player.addEffect(new MobEffectInstance(MobEffects.GLOWING,30 *20,0));
+                }
+            }
         }
 
         if (attacker instanceof Player player) {
@@ -98,6 +106,13 @@ public class ElixirSMPS2 {
             if (playerDuck.isShouldBurnOnHit()) {
                 livingEntity.setSecondsOnFire(2);
             }
+
+            if (playerDuck.getElixir() == Elixirs.INVISIBILITY) {
+                if (playerDuck.getElixirPoints() >= -2){
+                    player.addEffect(new MobEffectInstance(MobEffects.GLOWING,30 *20,0));
+                }
+            }
+
             playerDuck.getOnNextHit().accept(player);
         }
     }
@@ -120,4 +135,30 @@ public class ElixirSMPS2 {
         return amount;
     }
 
+    public static void onPlayerPriceUpdate(Villager villager,Player player) {
+        if (!ENABLED)return;
+        PlayerDuck playerDuck = PlayerDuck.of(player);
+        Elixir elixir = playerDuck.getElixir();
+        if (elixir == Elixirs.HERO_OF_THE_VILLAGE) {
+            int points = playerDuck.getElixirPoints();
+            if (points < -3) {
+                for (MerchantOffer merchantoffer : villager.getOffers()) {
+                    merchantoffer.addToSpecialPriceDiff(merchantoffer.getCostA().getCount());
+                }
+            } else {
+                switch (points) {
+                    case -3 -> {
+                        for (MerchantOffer merchantoffer : villager.getOffers()) {
+                            merchantoffer.addToSpecialPriceDiff((int) (merchantoffer.getCostA().getCount() *.5));
+                        }
+                    }
+                }
+                if (player.hasEffect(ModMobEffects.CHEAP_PRICES)) {
+                    for (MerchantOffer merchantoffer : villager.getOffers()) {
+                        merchantoffer.addToSpecialPriceDiff(-100);
+                    }
+                }
+            }
+        }
+    }
 }
