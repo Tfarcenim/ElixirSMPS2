@@ -19,6 +19,10 @@ public interface PlayerDuck {
 
     Elixir getElixir();
     void setElixir(Elixir elixir);
+
+    Elixir getAlternativeElixir();
+    void setAlternativeElixir(Elixir elixir);
+
     int[] getCooldowns();
     Consumer<Player> getOnNextHit();
     void setOnNextHit(Consumer<Player> onNextHit);

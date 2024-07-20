@@ -29,7 +29,6 @@ public class ModClient {
         for (ModKeybinds.ModKeybinding keyMapping : ModKeybinds.keyMappingList) {
             while (keyMapping.consumeClick()) {
                 keyMapping.onPress.run();
-                break;
             }
         }
     }

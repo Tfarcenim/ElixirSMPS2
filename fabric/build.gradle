@@ -31,11 +31,19 @@ loom {
         defaultRefmapName.set("${mod_id}.refmap.json")
     }
     runs {
-        client {
+        client1 {
             client()
             setConfigName("Fabric Client")
             ideConfigGenerated(true)
             runDir("run")
+            programArgs('--username', 'Dev1')
+        }
+        client2 {
+            client()
+            setConfigName("Fabric Client 2")
+            ideConfigGenerated(true)
+            runDir("run")
+            programArgs('--username', 'Dev2')
         }
         server {
             server()

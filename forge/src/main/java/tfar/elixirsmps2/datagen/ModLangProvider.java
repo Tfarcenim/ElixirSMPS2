@@ -9,6 +9,7 @@ import net.minecraftforge.common.data.LanguageProvider;
 import org.codehaus.plexus.util.StringUtils;
 import tfar.elixirsmps2.ElixirSMPS2;
 import tfar.elixirsmps2.init.ModItems;
+import tfar.elixirsmps2.init.ModMobEffects;
 
 import java.util.function.Supplier;
 
@@ -22,6 +23,13 @@ public class ModLangProvider extends LanguageProvider {
     protected void addTranslations() {
         addDefaultItem(() -> ModItems.ELIXIR_POINT);
         addDefaultItem(() -> ModItems.EFFECT_REROLL);
+
+        addEffect(() -> ModMobEffects.FREEZING,"Freezing");
+        addEffect(() -> ModMobEffects.INSTANT_MINE,"Instant Mine");
+        addEffect(() -> ModMobEffects.STUNNED,"Stunned");
+        addEffect(() -> ModMobEffects.CHEAP_PRICES,"Cheap Prices");
+        addEffect(() -> ModMobEffects.HEALTH_SINKING,"Health Sinking");
+        addEffect(() -> ModMobEffects.GENERIC_DAMAGE_BOOST,"Generic Damage Boost");
     }
 
     protected void addDefaultItem(Supplier<? extends Item> supplier) {

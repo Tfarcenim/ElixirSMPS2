@@ -57,11 +57,13 @@ public class ElixirSMPS2 {
     public static void onDeath(LivingEntity living, DamageSource damageSource) {
         if (!ENABLED)return;
         if (living instanceof ServerPlayer serverPlayer) {
+            PlayerDuck playerDuck = PlayerDuck.of(serverPlayer);
+            if (playerDuck.getElixirPoints() <-3)return;
             ItemStack stack = ModItems.ELIXIR_POINT.getDefaultInstance();
             ItemEntity itemEntity = new ItemEntity(living.level(), living.getX(), living.getY(), living.getZ(), stack);
             itemEntity.setUnlimitedLifetime();
             living.level().addFreshEntity(itemEntity);
-            PlayerDuck.of(serverPlayer).addElixirPoints(-1);
+            playerDuck.addElixirPoints(-1);
         }
     }
 
@@ -125,13 +127,23 @@ public class ElixirSMPS2 {
             if (source.is(DamageTypeTags.IS_FIRE)) {
                 amount *= playerDuck.getFireDamageMultiplier();
             }
+            Elixir elixir = playerDuck.getElixir();
             if (source.is(DamageTypes.DROWN)) {
-                Elixir elixir = playerDuck.getElixir();
                 if (elixir == Elixirs.WATER_BREATHING && playerDuck.getElixirPoints() < -3) {
                     amount *=2;
                 }
             }
+            if (elixir == Elixirs.RESISTANCE && playerDuck.getElixirPoints() < -3) {
+                amount *= 1.2;
+            }
         }
+
+        if (attacker instanceof Player player) {
+            if (player.hasEffect(ModMobEffects.GENERIC_DAMAGE_BOOST)) {
+                amount *= 1+ (player.getEffect(ModMobEffects.GENERIC_DAMAGE_BOOST).getAmplifier() +1) *.1;
+            }
+        }
+
         return amount;
     }
 

@@ -26,6 +26,7 @@ public abstract class PlayerMixin extends LivingEntity implements PlayerDuck {
     @Unique
     int elixirPoints;
     @Unique Elixir elixir;
+    @Unique Elixir alternativeElixir;
 
     @Unique
     int[] cooldowns = new int[6];
@@ -71,6 +72,15 @@ public abstract class PlayerMixin extends LivingEntity implements PlayerDuck {
             this.elixir.disable((Player) (Object)this,false);
         }
         this.elixir = elixir;
+    }
+
+    public Elixir getAlternativeElixir() {
+        return alternativeElixir;
+    }
+
+    @Override
+    public void setAlternativeElixir(Elixir alternativeElixir) {
+        this.alternativeElixir = alternativeElixir;
     }
 
     @Override

@@ -10,10 +10,13 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import tfar.elixirsmps2.ElixirSMPS2;
 import tfar.elixirsmps2.PlayerDuck;
 import tfar.elixirsmps2.elixir.Elixir;
 import tfar.elixirsmps2.elixir.Elixirs;
+import tfar.elixirsmps2.init.ModItems;
 import tfar.elixirsmps2.network.S2CCooldownPacket;
 import tfar.elixirsmps2.platform.Services;
 
@@ -44,7 +47,7 @@ public class ModCommands {
                                 .then(Commands.argument("player", EntityArgument.player()).executes(ModCommands::epGet)))
                         .then(Commands.literal("set")
                                 .then(Commands.argument("player", EntityArgument.player())
-                                        .then(Commands.argument("ep", IntegerArgumentType.integer())
+                                        .then(Commands.argument("ep", IntegerArgumentType.integer(-4,5))
                                                 .executes(ModCommands::epSet))))
                 )
                 .then(Commands.literal("effect")
@@ -58,6 +61,12 @@ public class ModCommands {
                 .then(Commands.literal("cooldown")
                         .requires(requires(ELIXIR_COOLDOWN, 2))
                         .then(Commands.literal("reset").then(Commands.argument("player", EntityArgument.player()).executes(ModCommands::resetCooldowns)))
+                )
+        );
+
+        dispatcher.register(Commands.literal("withdraw")
+                .then(Commands.argument("ep",IntegerArgumentType.integer(1))
+                        .executes(ModCommands::epWithdraw)
                 )
         );
     }
@@ -93,6 +102,21 @@ public class ModCommands {
         ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
         int points = IntegerArgumentType.getInteger(ctx, "ep");
         PlayerDuck.of(player).addElixirPoints(points);
+        return 1;
+    }
+
+    public static int epWithdraw(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();//EntityArgument.getPlayer(ctx, "player");
+        int points = IntegerArgumentType.getInteger(ctx, "ep");
+        PlayerDuck playerDuck = PlayerDuck.of(player);
+        int curPoints = playerDuck.getElixirPoints();
+        if (curPoints <-3) return 0;
+        if (curPoints - points < -4) return 0;
+        playerDuck.addElixirPoints(-points);
+        ItemStack stack = new ItemStack(ModItems.ELIXIR_POINT,points);
+        if (!player.addItem(stack)) {
+            player.level().addFreshEntity(new ItemEntity(player.serverLevel(),player.getX(),player.getY(),player.getZ(),stack));
+        }
         return 1;
     }
 
@@ -139,9 +163,6 @@ public class ModCommands {
         Elixir next = Elixirs.getRandom(player.getRandom());
 
         if (current == next) return 0;
-        if (current != null) {
-            current.disable(player, false);
-        }
         playerDuck.setElixir(next);
         next.applyPassiveEffects(player);
         return 1;

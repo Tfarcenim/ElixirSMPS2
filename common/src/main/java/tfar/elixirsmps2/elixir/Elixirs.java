@@ -22,6 +22,9 @@ public class Elixirs {
     public static final HasteElixir HASTE = register(new HasteElixir("haste",new int[]{0,0,180 * 20,120 * 20,180 * 20,180 * 20}, MobEffects.DIG_SPEED,MobEffects.DIG_SLOWDOWN));
     public static final HeroofTheVillageElixir HERO_OF_THE_VILLAGE = register(new HeroofTheVillageElixir("hero_of_the_village",new int[]{0,300 * 20,120 * 20,120 * 20,0,300 * 20}, MobEffects.HERO_OF_THE_VILLAGE,null));
     public static final InvisibilityElixir INVISIBILITY = register(new InvisibilityElixir("invisibility",new int[]{0,0,(10 + 120) * 20,180 * 20,180 * 20,180 * 20}, MobEffects.INVISIBILITY,MobEffects.GLOWING));
+    public static final LuckElixir LUCK = register(new LuckElixir("luck",new int[]{0,0,(10 + 120) * 20,180 * 20,180 * 20,180 * 20}, MobEffects.LUCK,MobEffects.UNLUCK));
+    public static final RegenerationElixir REGENERATION = register(new RegenerationElixir("regeneration",new int[]{0,180 *20,(10 + 180) * 20,180 * 20,180 * 20,0}, MobEffects.REGENERATION,null));
+    public static final ResistanceElixir RESISTANCE = register(new ResistanceElixir("resistance",new int[]{0,120 *20,(120) * 20,240 * 20,120 * 20,300 * 20}, MobEffects.DAMAGE_RESISTANCE,null));
 
     public static <E extends Elixir> E register(E elixir) {
         ELIXIR_MAP.put(elixir.getName(),elixir);

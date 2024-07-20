@@ -1,4 +1,10 @@
 {
+  "effect.elixirsmps2.cheap_prices": "Cheap Prices",
+  "effect.elixirsmps2.freezing": "Freezing",
+  "effect.elixirsmps2.generic_damage_boost": "Generic Damage Boost",
+  "effect.elixirsmps2.health_sinking": "Health Sinking",
+  "effect.elixirsmps2.instant_mine": "Instant Mine",
+  "effect.elixirsmps2.stunned": "Stunned",
   "item.elixirsmps2.effect_reroll": "Effect Reroll",
   "item.elixirsmps2.elixir_point": "Elixir Point"
 }

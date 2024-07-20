@@ -6,8 +6,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -88,6 +90,10 @@ public class Elixir {
        return player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
     }
 
+    protected static Player getNearestPlayer(ServerPlayer player) {
+        return player.serverLevel().getNearestPlayer(TargetingConditions.DEFAULT.copy().ignoreLineOfSight(),player);
+    }
+
     protected static void removeSomeEffects(Player player, MobEffectCategory category) {
         Iterator<MobEffectInstance> iterator = player.getActiveEffectsMap().values().iterator();
 
@@ -101,8 +107,32 @@ public class Elixir {
         }
     }
 
+    protected static void removeNonElixirPositiveEffects(Player player) {
+        PlayerDuck playerDuck = PlayerDuck.of(player);
+        Elixir elixir = playerDuck.getElixir();
+        Iterator<MobEffectInstance> iterator = player.getActiveEffectsMap().values().iterator();
+
+        while (iterator.hasNext()) {
+            MobEffectInstance effect = iterator.next();
+            if (effect.getEffect().getCategory() == MobEffectCategory.BENEFICIAL && (elixir == null || elixir.good != effect.getEffect())) {
+                // if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobEffectEvent.Remove(this, effect))) continue;
+                ((LivingEntityAccess) player).$onEffectRemoved(effect);
+                iterator.remove();
+            }
+        }
+    }
+
     protected static void push(Player player, Vec3 dir) {
         player.setDeltaMovement(player.getDeltaMovement().add(dir));
         player.hurtMarked = true;
+    }
+
+    protected static void addAttributeSafely(Player player, Attribute attribute, AttributeModifier modifier) {
+        AttributeInstance attributeInstance = player.getAttribute(attribute);
+        if (attributeInstance == null) return;
+        if (attributeInstance.getModifier(modifier.getId()) != null) {
+            attributeInstance.removeModifier(modifier.getId());
+        }
+        attributeInstance.addPermanentModifier(modifier);
     }
 }

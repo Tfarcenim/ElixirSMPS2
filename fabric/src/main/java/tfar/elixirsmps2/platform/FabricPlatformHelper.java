@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import tfar.elixirsmps2.ElixirSMPS2;
+import tfar.elixirsmps2.client.ModClientFabric;
 import tfar.elixirsmps2.network.*;
 import tfar.elixirsmps2.platform.services.IPlatformHelper;
 import net.fabricmc.loader.api.FabricLoader;
@@ -67,7 +68,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public <MSG extends S2CModPacket> void registerClientPacket(Class<MSG> packetLocation, Function<FriendlyByteBuf, MSG> reader) {
         if (MixinEnvironment.getCurrentEnvironment().getSide() == MixinEnvironment.Side.CLIENT) {
-            ClientPlayNetworking.registerGlobalReceiver(PacketHandler.packet(packetLocation), new ClientHandler<>(reader));
+            ModClientFabric.registerClientPacket(packetLocation,reader);
         }
     }
 

@@ -20,9 +20,12 @@ public class ElixirPointItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
             PlayerDuck playerDuck = PlayerDuck.of(player);
-            playerDuck.addElixirPoints(1);
-            if (!player.getAbilities().instabuild) {
-                stack.shrink(1);
+            int points = playerDuck.getElixirPoints();
+            if (points < 5) {
+                playerDuck.addElixirPoints(1);
+                if (!player.getAbilities().instabuild) {
+                    stack.shrink(1);
+                }
             }
         }
         return InteractionResultHolder.sidedSuccess(stack,level.isClientSide);
