@@ -73,7 +73,7 @@ public class SpeedElixir extends Elixir {
                 addTempMobEffect(player,good,2,20 * 15);
             }
             case 3 -> {
-                player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle()));
+                player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle().scale(2)));
                 player.hurtMarked = true;
             }
             case 4 -> {

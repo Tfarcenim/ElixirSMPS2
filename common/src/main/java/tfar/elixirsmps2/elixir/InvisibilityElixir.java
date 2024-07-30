@@ -62,7 +62,11 @@ public class InvisibilityElixir extends Elixir {
     protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
         switch (key) {
             case 0 -> {
-                addMobEffect(player,good,2);
+                if (player.hasEffect(good)) {
+                    player.removeEffect(good);
+                } else {
+                    addMobEffect(player, good, 0);
+                }
             }
             case 1 -> {
             }

@@ -17,6 +17,7 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 import tfar.elixirsmps2.commands.ModCommands;
 import tfar.elixirsmps2.elixir.Elixir;
@@ -167,7 +168,9 @@ public class ElixirSMPS2 {
                 }
                 if (player.hasEffect(ModMobEffects.CHEAP_PRICES)) {
                     for (MerchantOffer merchantoffer : villager.getOffers()) {
-                        merchantoffer.addToSpecialPriceDiff(-100);
+                        if (merchantoffer.getBaseCostA().is(Items.EMERALD)) {
+                            merchantoffer.addToSpecialPriceDiff(-100);
+                        }
                     }
                 }
             }
