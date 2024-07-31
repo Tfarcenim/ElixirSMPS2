@@ -85,7 +85,7 @@ public class FireResistanceElixir extends Elixir {
                 tryAbsorbWater(player.serverLevel(),player.blockPosition());
             }
             case 3 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
+                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     PlayerDuck otherPlayerDuck = PlayerDuck.of(otherPlayer);
                     otherPlayer.removeEffect(good);

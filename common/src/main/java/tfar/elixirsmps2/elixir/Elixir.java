@@ -18,8 +18,10 @@ import tfar.elixirsmps2.PlayerDuck;
 import tfar.elixirsmps2.init.ModMobEffects;
 import tfar.elixirsmps2.mixin.LivingEntityAccess;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class Elixir {
     private final String name;
@@ -70,12 +72,12 @@ public class Elixir {
         return false;
     }
 
-    protected static void addMobEffect(Player player, MobEffect mobEffect, int amplifier) {
-        player.addEffect(new MobEffectInstance(mobEffect,MobEffectInstance.INFINITE_DURATION,amplifier,false,false,true));
+    protected static boolean addMobEffect(Player player, MobEffect mobEffect, int amplifier) {
+        return player.addEffect(new MobEffectInstance(mobEffect,MobEffectInstance.INFINITE_DURATION,amplifier,false,false,true));
     }
 
-    protected static void addTempMobEffect(LivingEntity living, MobEffect mobEffect, int amplifier, int time) {
-        living.addEffect(new MobEffectInstance(mobEffect,time,amplifier,false,false,true));
+    protected static boolean addTempMobEffect(LivingEntity living, MobEffect mobEffect, int amplifier, int time) {
+        return living.addEffect(new MobEffectInstance(mobEffect,time,amplifier,false,false,true));
     }
 
     protected void notifyAbilityHit(ServerPlayer affected,int level) {
@@ -87,7 +89,7 @@ public class Elixir {
     }
 
     protected static List<Player> getNearbyPlayers(ServerPlayer player) {
-       return player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
+       return player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
     }
 
     protected static Player getNearestPlayer(ServerPlayer player) {
@@ -123,16 +125,27 @@ public class Elixir {
     }
 
     protected static void push(Player player, Vec3 dir) {
-        player.setDeltaMovement(player.getDeltaMovement().add(dir));
+        player.setDeltaMovement(player.getDeltaMovement().subtract(dir));
         player.hurtMarked = true;
     }
 
-    protected static void addAttributeSafely(Player player, Attribute attribute, AttributeModifier modifier) {
+    protected static boolean addAttributeSafely(Player player, Attribute attribute, AttributeModifier modifier) {
         AttributeInstance attributeInstance = player.getAttribute(attribute);
-        if (attributeInstance == null) return;
+        if (attributeInstance == null) return false;
         if (attributeInstance.getModifier(modifier.getId()) != null) {
             attributeInstance.removeModifier(modifier.getId());
         }
         attributeInstance.addPermanentModifier(modifier);
+        return true;
     }
+
+    public Set<MobEffect> grants() {
+        Set<MobEffect> mobEffects = new HashSet<>();
+        mobEffects.add(good);
+        if (bad != null) {
+            mobEffects.add(bad);
+        }
+        return mobEffects;
+    }
+
 }

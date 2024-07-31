@@ -50,41 +50,42 @@ public class WaterBreathingElixir extends Elixir {
 
     @Override
     protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+        boolean didSomething = false;
         switch (key) {
             case 0 -> {
-                addMobEffect(player,good,0);
+                didSomething |= addMobEffect(player,good,0);
             }
             case 1 -> {
-                addMobEffect(player,MobEffects.CONDUIT_POWER,0);
+                didSomething |= addMobEffect(player,MobEffects.CONDUIT_POWER,0);
             }
             case 2 -> {
                 List<Player> nearby = getNearbyPlayers(player);
                 for (Player otherPlayer:nearby) {
-                    addTempMobEffect(otherPlayer,MobEffects.DIG_SLOWDOWN,0,15 * 20);
+                    didSomething |= addTempMobEffect(otherPlayer,MobEffects.DIG_SLOWDOWN,0,15 * 20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 3 -> {
                 List<ServerPlayer> nearby = player.server.getPlayerList().getPlayers();
                 for (Player otherPlayer:nearby) {
-                    addTempMobEffect(player, ModMobEffects.FREEZING,0,15 * 20);
+                    didSomething |= addTempMobEffect(player, ModMobEffects.FREEZING,0,15 * 20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 4 -> {
                 List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.forCombat().selector(Entity::isInWater),player,player.getBoundingBox().inflate(10));
                 for (Player otherPlayer:nearby) {
-                    addTempMobEffect(player,MobEffects.POISON,0,15 * 20);
+                    didSomething |= addTempMobEffect(player,MobEffects.POISON,0,15 * 20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 5 -> {
                 if (player.isInWater()) {
-                    addTempMobEffect(player,MobEffects.REGENERATION,0,15 * 20);
+                    didSomething |= addTempMobEffect(player,MobEffects.REGENERATION,0,15 * 20);
                 }
             }
         }
-        return true;
+        return didSomething;
     }
 
     @Override

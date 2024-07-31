@@ -9,7 +9,10 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import tfar.elixirsmps2.ElixirSMPS2;
@@ -161,6 +164,8 @@ public class ModCommands {
         PlayerDuck playerDuck = PlayerDuck.of(player);
         Elixir current = playerDuck.getElixir();
         Elixir next = Elixirs.getRandom(player.getRandom());
+        ServerLevel level = player.serverLevel();
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundSource.PLAYERS, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
 
         if (current == next) return 0;
         playerDuck.setElixir(next);

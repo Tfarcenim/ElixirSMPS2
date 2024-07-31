@@ -42,6 +42,7 @@ public class InvisibilityElixir extends Elixir {
                 addMobEffect(player,MobEffects.MOVEMENT_SLOWDOWN,0);
             } else {
                 player.removeEffect(bad);
+                player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
                 switch (elixirPoints) {
                     case -3 -> {
                         addMobEffect(player,bad,0);
@@ -60,6 +61,7 @@ public class InvisibilityElixir extends Elixir {
 
     @Override
     protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+        boolean didSomething = false;
         switch (key) {
             case 0 -> {
                 if (player.hasEffect(good)) {
@@ -71,23 +73,23 @@ public class InvisibilityElixir extends Elixir {
             case 1 -> {
             }
             case 2 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(20));
+                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(40));
                 for (Player otherPlayer:nearby) {
-                    otherPlayer.addEffect(new MobEffectInstance(bad,20 * 15,0));
+                    didSomething |= otherPlayer.addEffect(new MobEffectInstance(bad,20 * 15,0));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 3 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
+                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
-                    otherPlayer.addEffect(new MobEffectInstance(ModMobEffects.STUNNED,20 * 5,0));
+                    didSomething |= otherPlayer.addEffect(new MobEffectInstance(ModMobEffects.STUNNED,20 * 5,0));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 4 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
+                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
-                    otherPlayer.addEffect(new MobEffectInstance(MobEffects.BLINDNESS,20 * 15,0));
+                    didSomething |= otherPlayer.addEffect(new MobEffectInstance(MobEffects.BLINDNESS,20 * 15,0));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
@@ -97,10 +99,11 @@ public class InvisibilityElixir extends Elixir {
                     Vec3 dir = player.position().subtract(otherPlayer.position()).normalize();
                     push(otherPlayer,dir);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
+                    didSomething = true;
                 }
             }
         }
-        return true;
+        return didSomething;
     }
 
     @Override

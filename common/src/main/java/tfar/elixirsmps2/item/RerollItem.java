@@ -15,6 +15,11 @@ public class RerollItem extends Item {
     }
 
     @Override
+    public boolean isFoil(ItemStack $$0) {
+        return true;
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {

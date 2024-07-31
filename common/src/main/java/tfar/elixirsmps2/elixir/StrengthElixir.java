@@ -63,17 +63,17 @@ public class StrengthElixir extends Elixir {
                 addMobEffect(player,good,1);
             }
             case 1 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
+                boolean didSomething = false;
+                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
-                    otherPlayer.addEffect(new MobEffectInstance(bad,20 * 20,0));
+                    didSomething |= otherPlayer.addEffect(new MobEffectInstance(bad,20 * 20,0));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
+                return didSomething;
             }
             case 2 -> {
                 boolean didSomething = player.removeEffect(bad);
-                if (player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN)) {
-                    didSomething = true;
-                }
+                didSomething |= player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
                 return didSomething;
             }
             case 3 -> {
@@ -88,12 +88,14 @@ public class StrengthElixir extends Elixir {
                 return false;
             }
             case 4 -> {
+                boolean didSomething = false;
                 List<ServerPlayer> allPlayers = player.server.getPlayerList().getPlayers();
                 for (ServerPlayer otherPlayer:allPlayers) {
                     if (otherPlayer == player) continue;
-                    otherPlayer.removeEffect(good);
+                    didSomething |= otherPlayer.removeEffect(good);
                     notifyAbilityHit(otherPlayer,key);
                 }
+                return didSomething;
             }
             case 5 -> {
                 List<ServerPlayer> allPlayers = player.server.getPlayerList().getPlayers();

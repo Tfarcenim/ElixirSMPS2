@@ -63,11 +63,13 @@ public class SpeedElixir extends Elixir {
                 addMobEffect(player,good,2);
             }
             case 1 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
+                boolean didSomething = false;
+                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
-                    otherPlayer.addEffect(new MobEffectInstance(bad,20 * 15,1));
+                    didSomething |= otherPlayer.addEffect(new MobEffectInstance(bad,20 * 15,1));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
+                return didSomething;
             }
             case 2 -> {
                 addTempMobEffect(player,good,2,20 * 15);
@@ -77,14 +79,16 @@ public class SpeedElixir extends Elixir {
                 player.hurtMarked = true;
             }
             case 4 -> {
-                addTempMobEffect(player,MobEffects.DIG_SPEED,1,20 * 20);
+                return addTempMobEffect(player,MobEffects.DIG_SPEED,1,20 * 20);
             }
             case 5 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
+                boolean didSomething = false;
+                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
-                    otherPlayer.addEffect(new MobEffectInstance(MobEffects.BLINDNESS,20 * 15,1));
+                    didSomething |= otherPlayer.addEffect(new MobEffectInstance(MobEffects.BLINDNESS,20 * 15,1));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
+                return didSomething;
             }
         }
         return true;

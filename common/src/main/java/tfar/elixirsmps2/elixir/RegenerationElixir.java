@@ -46,7 +46,7 @@ public class RegenerationElixir extends Elixir {
             if (elixirPoints < -3) {
                 addMobEffect(player,MobEffects.MOVEMENT_SLOWDOWN,0);
                 addMobEffect(player,MobEffects.WEAKNESS,0);
-                addAttributeSafely(player, Attributes.MAX_HEALTH,new AttributeModifier(uuid,"Regen elixir",-4, AttributeModifier.Operation.ADDITION));
+                addMobEffect(player,ModMobEffects.HEALTH_SINKING,0);
                 capHealth(player);
             } else {
                 switch (elixirPoints) {
@@ -68,35 +68,37 @@ public class RegenerationElixir extends Elixir {
 
     @Override
     protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+        boolean didSomething = false;
         switch (key) {
             case 0 -> {
-                addMobEffect(player,good,0);
+                didSomething |= addMobEffect(player,good,0);
             }
             case 1 -> {
                 player.heal(20);
+                didSomething = true;
             }
             case 2 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
+                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
-                    addTempMobEffect(otherPlayer,ModMobEffects.HEALTH_SINKING,0,20 *20);
+                    didSomething |= addTempMobEffect(otherPlayer,ModMobEffects.HEALTH_SINKING,0,20 *20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 3 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
+                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
-                    addTempMobEffect(player,MobEffects.POISON,0,20 *20);
+                    didSomething |= addTempMobEffect(player,MobEffects.POISON,0,20 *20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 4 -> {
-                addTempMobEffect(player,good,1,30 * 20);
+                didSomething |= addTempMobEffect(player,good,1,30 * 20);
             }
             case 5 -> {
-                addAttributeSafely(player, Attributes.MAX_HEALTH,new AttributeModifier(uuid,"Regen elixir",10, AttributeModifier.Operation.ADDITION));
+                didSomething |= addAttributeSafely(player, Attributes.MAX_HEALTH,new AttributeModifier(uuid,"Regen elixir",10, AttributeModifier.Operation.ADDITION));
             }
         }
-        return true;
+        return didSomething;
     }
 
     @Override
@@ -110,14 +112,11 @@ public class RegenerationElixir extends Elixir {
 
     @Override
     public void disable(Player player, boolean positiveOnly) {
-        PlayerDuck playerDuck = PlayerDuck.of(player);
         player.removeEffect(good);
         AttributeModifier attributeModifier = player.getAttribute(Attributes.MAX_HEALTH).getModifier(uuid);
         if (attributeModifier!= null && attributeModifier.getAmount() > 0) {
             player.getAttribute(Attributes.MAX_HEALTH).removeModifier(uuid);
             capHealth(player);
-        } else if (!positiveOnly) {
-            player.getAttribute(Attributes.MAX_HEALTH).removeModifier(uuid);
         }
     }
 

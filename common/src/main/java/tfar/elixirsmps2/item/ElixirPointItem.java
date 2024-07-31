@@ -1,5 +1,7 @@
 package tfar.elixirsmps2.item;
 
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
@@ -16,6 +18,11 @@ public class ElixirPointItem extends Item {
     }
 
     @Override
+    public boolean isFoil(ItemStack $$0) {
+        return true;
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
@@ -23,6 +30,7 @@ public class ElixirPointItem extends Item {
             int points = playerDuck.getElixirPoints();
             if (points < 5) {
                 playerDuck.addElixirPoints(1);
+                level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.PLAYERS, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
                 if (!player.getAbilities().instabuild) {
                     stack.shrink(1);
                 }

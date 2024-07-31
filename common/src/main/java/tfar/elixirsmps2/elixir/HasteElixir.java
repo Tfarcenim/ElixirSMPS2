@@ -14,6 +14,7 @@ import tfar.elixirsmps2.PlayerDuck;
 import tfar.elixirsmps2.init.ModMobEffects;
 
 import java.util.List;
+import java.util.Set;
 
 public class HasteElixir extends Elixir{
     public HasteElixir(String name, int[] cooldowns, MobEffect good, MobEffect bad) {
@@ -65,17 +66,18 @@ public class HasteElixir extends Elixir{
 
     @Override
     protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+        boolean didSomething = false;
         switch (key) {
             case 0 -> {
-                addMobEffect(player,good,0);
+                didSomething |= addMobEffect(player,good,0);
             }
             case 1 -> {
-                addTempMobEffect(player,good,2,15 * 20);
+                didSomething |= addTempMobEffect(player,good,2,15 * 20);
             }
             case 2 -> {
                 List<Player> nearby = getNearbyPlayers(player);
                 for (Player otherPlayer:nearby) {
-                    addTempMobEffect(otherPlayer,bad,0,15 * 20);
+                    didSomething |= addTempMobEffect(otherPlayer,bad,0,15 * 20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
@@ -92,9 +94,10 @@ public class HasteElixir extends Elixir{
                         }
                     }
                 }
+                didSomething = true;
             }
             case 4 -> {
-                addTempMobEffect(player,ModMobEffects.INSTANT_MINE,0,20 * 10);
+                didSomething |= addTempMobEffect(player,ModMobEffects.INSTANT_MINE,0,20 * 10);
             }
             case 5 -> {
                 List<Player> nearby = getNearbyPlayers(player);
@@ -103,10 +106,11 @@ public class HasteElixir extends Elixir{
                     PlayerDuck otherPlayerDuck = PlayerDuck.of(otherPlayer);
                     otherPlayerDuck.getCooldowns()[0] = Math.max(otherPlayerDuck.getCooldowns()[0],15 * 20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
+                    didSomething = true;
                 }
             }
         }
-        return true;
+        return didSomething;
     }
 
     @Override
@@ -127,5 +131,12 @@ public class HasteElixir extends Elixir{
             player.removeEffect(bad);
             player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
         }
+    }
+
+    @Override
+    public Set<MobEffect> grants() {
+        Set<MobEffect> grants = super.grants();
+        grants.add(MobEffects.MOVEMENT_SLOWDOWN);
+        return grants;
     }
 }

@@ -59,7 +59,7 @@ public class ElixirSMPS2 {
         if (!ENABLED)return;
         if (living instanceof ServerPlayer serverPlayer) {
             PlayerDuck playerDuck = PlayerDuck.of(serverPlayer);
-            if (playerDuck.getElixirPoints() <-3)return;
+            if (playerDuck.getElixirPoints() <-4)return;
             ItemStack stack = ModItems.ELIXIR_POINT.getDefaultInstance();
             ItemEntity itemEntity = new ItemEntity(living.level(), living.getX(), living.getY(), living.getZ(), stack);
             itemEntity.setUnlimitedLifetime();
@@ -92,10 +92,10 @@ public class ElixirSMPS2 {
         }
     }
 
-    public static void afterDamage(LivingEntity livingEntity, DamageSource source) {
+    public static void afterDamage(LivingEntity target, DamageSource source) {
         if (!ENABLED) return;
         Entity attacker = source.getEntity();
-        if (livingEntity instanceof Player player) {
+        if (target instanceof Player player) {
             PlayerDuck playerDuck = PlayerDuck.of(player);
             if (playerDuck.getElixir() == Elixirs.INVISIBILITY) {
                 if (playerDuck.getElixirPoints() <= -2){
@@ -107,12 +107,12 @@ public class ElixirSMPS2 {
         if (attacker instanceof Player player) {
             PlayerDuck playerDuck = PlayerDuck.of(player);
             if (playerDuck.isShouldBurnOnHit()) {
-                livingEntity.setSecondsOnFire(2);
+                target.setSecondsOnFire(2);
             }
 
             if (playerDuck.getElixir() == Elixirs.INVISIBILITY) {
-                if (playerDuck.getElixirPoints() >= -2){
-                    player.addEffect(new MobEffectInstance(MobEffects.GLOWING,30 *20,0));
+                if (playerDuck.getElixirPoints() >= 1) {
+                    target.addEffect(new MobEffectInstance(MobEffects.GLOWING,30 *20,0));
                 }
             }
 
@@ -159,11 +159,9 @@ public class ElixirSMPS2 {
                     merchantoffer.addToSpecialPriceDiff(merchantoffer.getCostA().getCount());
                 }
             } else {
-                switch (points) {
-                    case -3 -> {
-                        for (MerchantOffer merchantoffer : villager.getOffers()) {
-                            merchantoffer.addToSpecialPriceDiff((int) (merchantoffer.getCostA().getCount() *.5));
-                        }
+                if (points == -3) {
+                    for (MerchantOffer merchantoffer : villager.getOffers()) {
+                        merchantoffer.addToSpecialPriceDiff((int) (merchantoffer.getCostA().getCount() * .5));
                     }
                 }
                 if (player.hasEffect(ModMobEffects.CHEAP_PRICES)) {
@@ -177,3 +175,65 @@ public class ElixirSMPS2 {
         }
     }
 }
+//Strength Elixir
+//Ep -3 is gives weakness 2 instead of weakness 1
+//Ep 1 not giving weakness to enemy
+//
+//Speed Elixir 
+//Ep -3 doesnt give slowness 1 it gives slowness 2.
+//Ep 1 Doesnt give enemy slowness
+//Ep 5 Doesnt give enemy Blindness
+//
+//Fire Res Elixir
+//Ep 3 Does not remove fire res from enemy
+//Ep -3 is giving slowness instead of being ep -4
+//
+//Water Breathing Elixir
+//Ep 4 Doesnt give poison to enemy in water(Does give to person using ability)
+//Ep 3 Doesnt give enemy freezing but gives person using ability freezing
+//
+//Haste Elixir
+//Ep 4 makes a stone box above player(legs arent covered but covers head) make it so it fully encloses the player
+//Ep 3 gives Slowness and mining fatigue but its only meant to be slowness
+//
+//Hero Of Village
+//Ep -3 and -4 are the same.
+//Ep -4 is suppose to be more expensive
+//
+//Invis Elixir
+//Ep 5 Pulls enemy towards player instead of pushing away. Its meant to push away.
+//Ep 2 is not 20 blocks away its like 10 blocks.
+//Ep 1 Does not give enemy glowing every hit
+//Ep -3 Gives glowing and Slowness meant to just be glowing
+//
+//Luck Elixir
+//Ep 1 not working at all
+//Ep 2 not working at all
+//Ep 4 not working at all
+//Ep 5 gives 20-30 hearts meant to be 11-20 hearts. Meant to just set self to 11-20 hearts instead of adding them.
+//Ep -3 is giving bad luck 2 instead of bad luck 1 
+//
+//
+//
+//
+//Regen Elixir 
+//Ep 2 doesnt remove 2 hearts.(Gives enemy health sinking effect though)
+//Ep 3 gives self poison instead of enemy
+//Ep -3 sets self to 8 hearts instead of ep -4
+//When i gave myself more ep it didnt remove Weakness and slowness
+//
+//Resistance Elixir
+//Ep 4 Does not remove strength or disable strength from enemy.
+//Ep 4 and Ep 3 is swapped.(Deal 30% damage still doesnt work)
+//Ep -3 takes 20% more damage
+//Ep -4 still takes 20% more damage
+//
+//Other
+//Drinking milk removes elixir effects(not meant to)
+//Please enchant the elixir reroll and Ep to make it look a lil better.
+//When player dies at -4 ep it doesnt ban them nor set them to -5
+//
+//Sounds:
+//When gaining ep - minecraft:block.respawn_anchor.charge 
+//When rerolling elixir - minecraft:ui.cartography_table.take_result 
+//Ability using can stay snowball throw

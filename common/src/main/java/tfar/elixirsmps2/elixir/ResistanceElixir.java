@@ -62,25 +62,29 @@ public class ResistanceElixir extends Elixir {
 
     @Override
     protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+        boolean didAnything = false;
         switch (key) {
             case 0 -> {
-                addMobEffect(player,good,0);
+                didAnything |= addMobEffect(player,good,0);
             }
             case 1 -> {
-                addTempMobEffect(player,good,2,15 * 20);
+                didAnything = addTempMobEffect(player,good,2,15 * 20);
             }
             case 2 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
+                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
-                    addTempMobEffect(otherPlayer,MobEffects.WEAKNESS,0,20 *20);
+                    didAnything |= addTempMobEffect(otherPlayer,MobEffects.WEAKNESS,0,20 *20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 3 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(6));
+                didAnything = addTempMobEffect(player,MobEffects.DAMAGE_BOOST,0,30 * 20);
+            }
+            case 4 -> {
+                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     PlayerDuck otherPlayerDuck = PlayerDuck.of(otherPlayer);
-                    otherPlayer.removeEffect(MobEffects.DAMAGE_BOOST);
+                    didAnything |= otherPlayer.removeEffect(MobEffects.DAMAGE_BOOST);
 
                     if (otherPlayerDuck.getElixir() == Elixirs.STRENGTH) {
                         Elixirs.STRENGTH.disable(otherPlayer,false);
@@ -93,14 +97,11 @@ public class ResistanceElixir extends Elixir {
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
-            case 4 -> {
-                addTempMobEffect(player,good,1,30 * 20);
-            }
             case 5 -> {
-                addTempMobEffect(player,good,4,20 * 5);
+                didAnything = addTempMobEffect(player, good, 4, 20 * 5);
             }
         }
-        return true;
+        return didAnything;
     }
 
     @Override
@@ -114,7 +115,6 @@ public class ResistanceElixir extends Elixir {
 
     @Override
     public void disable(Player player, boolean positiveOnly) {
-        PlayerDuck playerDuck = PlayerDuck.of(player);
         player.removeEffect(good);
         if (!positiveOnly) {
             player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
