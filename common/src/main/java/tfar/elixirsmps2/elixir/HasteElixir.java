@@ -137,6 +137,7 @@ public class HasteElixir extends Elixir{
     public Set<MobEffect> grants() {
         Set<MobEffect> grants = super.grants();
         grants.add(MobEffects.MOVEMENT_SLOWDOWN);
+        grants.add(MobEffects.CONDUIT_POWER);
         return grants;
     }
 }

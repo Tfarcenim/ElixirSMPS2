@@ -15,6 +15,7 @@ import tfar.elixirsmps2.PlayerDuck;
 import tfar.elixirsmps2.init.ModMobEffects;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class RegenerationElixir extends Elixir {
@@ -118,6 +119,11 @@ public class RegenerationElixir extends Elixir {
             player.getAttribute(Attributes.MAX_HEALTH).removeModifier(uuid);
             capHealth(player);
         }
+        if (!positiveOnly) {
+            player.removeEffect(ModMobEffects.HEALTH_SINKING);
+            player.removeEffect(MobEffects.WEAKNESS);
+            player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+        }
     }
 
     protected static void capHealth(Player player) {
@@ -125,4 +131,14 @@ public class RegenerationElixir extends Elixir {
             player.setHealth(player.getMaxHealth());
         }
     }
+
+    @Override
+    public Set<MobEffect> grants() {
+        Set<MobEffect> grants = super.grants();
+        grants.add(MobEffects.WEAKNESS);
+        grants.add(MobEffects.MOVEMENT_SLOWDOWN);
+        grants.add(ModMobEffects.HEALTH_SINKING);
+        return grants;
+    }
+
 }

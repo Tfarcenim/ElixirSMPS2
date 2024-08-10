@@ -2,7 +2,6 @@ package tfar.elixirsmps2.mixin;
 
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,14 +23,14 @@ import java.util.Iterator;
 import java.util.Map;
 
 @Mixin(LivingEntity.class)
-abstract class LivingEntityMixin extends Entity {
+abstract class LivingEntityMixinForge extends Entity {
     @Shadow @Final private Map<MobEffect, MobEffectInstance> activeEffects;
 
     @Shadow protected abstract void onEffectRemoved(MobEffectInstance pEffectInstance);
 
     @Shadow private boolean effectsDirty;
 
-    public LivingEntityMixin(EntityType<?> pEntityType, Level pLevel) {
+    public LivingEntityMixinForge(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
 

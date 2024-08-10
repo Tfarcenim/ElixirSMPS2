@@ -12,6 +12,7 @@ import tfar.elixirsmps2.PlayerDuck;
 import tfar.elixirsmps2.init.ModMobEffects;
 
 import java.util.List;
+import java.util.Set;
 
 public class InvisibilityElixir extends Elixir {
     public InvisibilityElixir(String name, int[] cooldowns, MobEffect good, MobEffect bad) {
@@ -122,5 +123,12 @@ public class InvisibilityElixir extends Elixir {
             player.removeEffect(bad);
             player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
         }
+    }
+
+    @Override
+    public Set<MobEffect> grants() {
+        Set<MobEffect> grants = super.grants();
+        grants.add(MobEffects.MOVEMENT_SLOWDOWN);
+        return grants;
     }
 }
