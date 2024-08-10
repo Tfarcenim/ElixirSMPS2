@@ -57,34 +57,34 @@ public class HeroofTheVillageElixir extends Elixir {
     }
 
     @Override
-    protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+    protected boolean actuallyApplyActiveEffects(ServerPlayer user, int key) {
         switch (key) {
             case 0 -> {
-                addMobEffect(player,good,1);
+                addMobEffect(user,good,1);
             }
             case 1 -> {
-                addTempMobEffect(player,ModMobEffects.CHEAP_PRICES,0,20 * 15);
+                addTempMobEffect(user,ModMobEffects.CHEAP_PRICES,0,20 * 15);
             }
             case 2 -> {
-                List<Villager> nearby = getNearbyVillagers(player);
+                List<Villager> nearby = getNearbyVillagers(user);
                 for (Villager villager:nearby) {
                     addTempMobEffect(villager,MobEffects.GLOWING,0,15 * 20);
                 }
             }
             case 3 -> {
-                removeSomeEffects(player, MobEffectCategory.HARMFUL);
+                removeSomeEffects(user, MobEffectCategory.HARMFUL);
             }
             case 4 -> {
-                addMobEffect(player,good,2);
+                addMobEffect(user,good,2);
             }
             case 5 -> {
-                List<ServerPlayer> allPlayers = player.server.getPlayerList().getPlayers();
+                List<ServerPlayer> allPlayers = user.server.getPlayerList().getPlayers();
                 for (ServerPlayer otherPlayer:allPlayers) {
-                    if (otherPlayer == player) continue;
+                    if (otherPlayer == user) continue;
                     PlayerDuck otherPlayerDuck = PlayerDuck.of(otherPlayer);
                     Elixir elixir = otherPlayerDuck.getElixir();
                     if (elixir != null) {
-                        elixir.disable(player,true);
+                        elixir.disable(otherPlayer,true);
                         for (int i = 0; i < otherPlayerDuck.getCooldowns().length;i++) {
                             otherPlayerDuck.getCooldowns()[i] = Math.max(20 * 20,otherPlayerDuck.getCooldowns()[i]);
                         }

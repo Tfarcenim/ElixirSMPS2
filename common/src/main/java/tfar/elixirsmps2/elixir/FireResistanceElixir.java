@@ -73,19 +73,19 @@ public class FireResistanceElixir extends Elixir {
     }
 
     @Override
-    protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+    protected boolean actuallyApplyActiveEffects(ServerPlayer user, int key) {
         switch (key) {
             case 0 -> {
-                addMobEffect(player,good,0);
+                addMobEffect(user,good,0);
             }
             case 1 -> {
-                PlayerDuck.of(player).toggleShouldBurnOnHit();
+                PlayerDuck.of(user).toggleShouldBurnOnHit();
             }
             case 2 -> {
-                tryAbsorbWater(player.serverLevel(),player.blockPosition());
+                tryAbsorbWater(user.serverLevel(), user.blockPosition());
             }
             case 3 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     PlayerDuck otherPlayerDuck = PlayerDuck.of(otherPlayer);
                     otherPlayer.removeEffect(good);
@@ -96,15 +96,15 @@ public class FireResistanceElixir extends Elixir {
                 }
             }
             case 4 -> {
-                if (player.isInLava()) {
-                    addTempMobEffect(player, MobEffects.REGENERATION, 0, 15 * 20);
+                if (user.isInLava()) {
+                    addTempMobEffect(user, MobEffects.REGENERATION, 0, 15 * 20);
                 }
             }
             case 5 -> {
-                Vec3 vec3 = player.getLookAngle();
-                LargeFireball largeFireball = new LargeFireball(player.serverLevel(),player,vec3.x,vec3.y,vec3.z,1);
-                largeFireball.setPos(player.getX(),player.getY()+player.getEyeHeight(),player.getZ());
-                player.level().addFreshEntity(largeFireball);
+                Vec3 vec3 = user.getLookAngle();
+                LargeFireball largeFireball = new LargeFireball(user.serverLevel(), user,vec3.x,vec3.y,vec3.z,1);
+                largeFireball.setPos(user.getX(), user.getY()+ user.getEyeHeight(), user.getZ());
+                user.level().addFreshEntity(largeFireball);
             }
         }
         return true;

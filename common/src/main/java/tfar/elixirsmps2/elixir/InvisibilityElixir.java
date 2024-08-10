@@ -60,43 +60,43 @@ public class InvisibilityElixir extends Elixir {
     }
 
     @Override
-    protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+    protected boolean actuallyApplyActiveEffects(ServerPlayer user, int key) {
         boolean didSomething = false;
         switch (key) {
             case 0 -> {
-                if (player.hasEffect(good)) {
-                    player.removeEffect(good);
+                if (user.hasEffect(good)) {
+                    user.removeEffect(good);
                 } else {
-                    addMobEffect(player, good, 0);
+                    addMobEffect(user, good, 0);
                 }
             }
             case 1 -> {
             }
             case 2 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(40));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(40));
                 for (Player otherPlayer:nearby) {
                     didSomething |= otherPlayer.addEffect(new MobEffectInstance(bad,20 * 15,0));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 3 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     didSomething |= otherPlayer.addEffect(new MobEffectInstance(ModMobEffects.STUNNED,20 * 5,0));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 4 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     didSomething |= otherPlayer.addEffect(new MobEffectInstance(MobEffects.BLINDNESS,20 * 15,0));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 5 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(10));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(10));
                 for (Player otherPlayer:nearby) {
-                    Vec3 dir = player.position().subtract(otherPlayer.position()).normalize();
+                    Vec3 dir = user.position().subtract(otherPlayer.position()).normalize();
                     push(otherPlayer,dir);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                     didSomething = true;

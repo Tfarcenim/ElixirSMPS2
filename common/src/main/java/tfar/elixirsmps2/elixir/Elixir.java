@@ -68,7 +68,7 @@ public class Elixir {
 
     }
 
-    protected boolean actuallyApplyActiveEffects(ServerPlayer player,int key) {
+    protected boolean actuallyApplyActiveEffects(ServerPlayer user,int key) {
         return false;
     }
 

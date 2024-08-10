@@ -61,27 +61,27 @@ public class ResistanceElixir extends Elixir {
     }
 
     @Override
-    protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+    protected boolean actuallyApplyActiveEffects(ServerPlayer user, int key) {
         boolean didAnything = false;
         switch (key) {
             case 0 -> {
-                didAnything |= addMobEffect(player,good,0);
+                didAnything |= addMobEffect(user,good,0);
             }
             case 1 -> {
-                didAnything = addTempMobEffect(player,good,2,15 * 20);
+                didAnything = addTempMobEffect(user,good,2,15 * 20);
             }
             case 2 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     didAnything |= addTempMobEffect(otherPlayer,MobEffects.WEAKNESS,0,20 *20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 3 -> {
-                didAnything = addTempMobEffect(player,MobEffects.DAMAGE_BOOST,0,30 * 20);
+                didAnything = addTempMobEffect(user,MobEffects.DAMAGE_BOOST,0,30 * 20);
             }
             case 4 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     PlayerDuck otherPlayerDuck = PlayerDuck.of(otherPlayer);
                     didAnything |= otherPlayer.removeEffect(MobEffects.DAMAGE_BOOST);
@@ -98,7 +98,7 @@ public class ResistanceElixir extends Elixir {
                 }
             }
             case 5 -> {
-                didAnything = addTempMobEffect(player, good, 4, 20 * 5);
+                didAnything = addTempMobEffect(user, good, 4, 20 * 5);
             }
         }
         return didAnything;

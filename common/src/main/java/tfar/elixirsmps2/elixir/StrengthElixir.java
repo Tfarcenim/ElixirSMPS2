@@ -57,14 +57,14 @@ public class StrengthElixir extends Elixir {
     }
 
     @Override
-    protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+    protected boolean actuallyApplyActiveEffects(ServerPlayer user, int key) {
         switch (key) {
             case 0 -> {
-                addMobEffect(player,good,1);
+                addMobEffect(user,good,1);
             }
             case 1 -> {
                 boolean didSomething = false;
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     didSomething |= otherPlayer.addEffect(new MobEffectInstance(bad,20 * 20,0));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
@@ -72,13 +72,13 @@ public class StrengthElixir extends Elixir {
                 return didSomething;
             }
             case 2 -> {
-                boolean didSomething = player.removeEffect(bad);
-                didSomething |= player.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+                boolean didSomething = user.removeEffect(bad);
+                didSomething |= user.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
                 return didSomething;
             }
             case 3 -> {
-                addMobEffect(player,good,2);
-                PlayerDuck playerDuck = PlayerDuck.of(player);
+                addMobEffect(user,good,2);
+                PlayerDuck playerDuck = PlayerDuck.of(user);
                 playerDuck.setOnNextHit(player1 -> {
                     player1.removeEffect(good);
                     addMobEffect(player1,good,1);
@@ -89,22 +89,22 @@ public class StrengthElixir extends Elixir {
             }
             case 4 -> {
                 boolean didSomething = false;
-                List<ServerPlayer> allPlayers = player.server.getPlayerList().getPlayers();
+                List<ServerPlayer> allPlayers = user.server.getPlayerList().getPlayers();
                 for (ServerPlayer otherPlayer:allPlayers) {
-                    if (otherPlayer == player) continue;
+                    if (otherPlayer == user) continue;
                     didSomething |= otherPlayer.removeEffect(good);
                     notifyAbilityHit(otherPlayer,key);
                 }
                 return didSomething;
             }
             case 5 -> {
-                List<ServerPlayer> allPlayers = player.server.getPlayerList().getPlayers();
+                List<ServerPlayer> allPlayers = user.server.getPlayerList().getPlayers();
                 for (ServerPlayer otherPlayer:allPlayers) {
-                    if (otherPlayer == player) continue;
+                    if (otherPlayer == user) continue;
                     PlayerDuck otherPlayerDuck = PlayerDuck.of(otherPlayer);
                     Elixir elixir = otherPlayerDuck.getElixir();
                     if (elixir != null) {
-                        elixir.disable(player,true);
+                        elixir.disable(user,true);
                         for (int i = 0; i < otherPlayerDuck.getCooldowns().length;i++) {
                             otherPlayerDuck.getCooldowns()[i] = Math.max(15 * 20,otherPlayerDuck.getCooldowns()[i]);
                         }

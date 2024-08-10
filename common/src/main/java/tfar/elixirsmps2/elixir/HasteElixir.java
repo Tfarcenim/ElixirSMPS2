@@ -65,31 +65,31 @@ public class HasteElixir extends Elixir{
     }
 
     @Override
-    protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+    protected boolean actuallyApplyActiveEffects(ServerPlayer user, int key) {
         boolean didSomething = false;
         switch (key) {
             case 0 -> {
-                didSomething |= addMobEffect(player,good,0);
+                didSomething |= addMobEffect(user,good,0);
             }
             case 1 -> {
-                didSomething |= addTempMobEffect(player,good,2,15 * 20);
+                didSomething |= addTempMobEffect(user,good,2,15 * 20);
             }
             case 2 -> {
-                List<Player> nearby = getNearbyPlayers(player);
+                List<Player> nearby = getNearbyPlayers(user);
                 for (Player otherPlayer:nearby) {
                     didSomething |= addTempMobEffect(otherPlayer,bad,0,15 * 20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 3 -> {
-                BlockPos origin = player.blockPosition();
+                BlockPos origin = user.blockPosition();
                 for (int y = 0; y < 5;y++) {
                     for (int z = -2; z < 3;z++) {
                         for (int x = -2; x < 3;x++) {
                             BlockPos pos = origin.offset(x,y,z);
-                            BlockState state = player.level().getBlockState(pos);
-                            if (state.canBeReplaced() && !player.getBoundingBox().intersects(new AABB(pos))) {
-                                player.level().setBlock(pos,Blocks.STONE.defaultBlockState(),3);
+                            BlockState state = user.level().getBlockState(pos);
+                            if (state.canBeReplaced() && !user.getBoundingBox().intersects(new AABB(pos))) {
+                                user.level().setBlock(pos,Blocks.STONE.defaultBlockState(),3);
                             }
                         }
                     }
@@ -97,10 +97,10 @@ public class HasteElixir extends Elixir{
                 didSomething = true;
             }
             case 4 -> {
-                didSomething |= addTempMobEffect(player,ModMobEffects.INSTANT_MINE,0,20 * 10);
+                didSomething |= addTempMobEffect(user,ModMobEffects.INSTANT_MINE,0,20 * 10);
             }
             case 5 -> {
-                List<Player> nearby = getNearbyPlayers(player);
+                List<Player> nearby = getNearbyPlayers(user);
                 for (Player otherPlayer:nearby) {
                     removeSomeEffects(otherPlayer, MobEffectCategory.BENEFICIAL);
                     PlayerDuck otherPlayerDuck = PlayerDuck.of(otherPlayer);

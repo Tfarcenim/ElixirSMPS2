@@ -67,35 +67,35 @@ public class RegenerationElixir extends Elixir {
     }
 
     @Override
-    protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+    protected boolean actuallyApplyActiveEffects(ServerPlayer user, int key) {
         boolean didSomething = false;
         switch (key) {
             case 0 -> {
-                didSomething |= addMobEffect(player,good,0);
+                didSomething |= addMobEffect(user,good,0);
             }
             case 1 -> {
-                player.heal(20);
+                user.heal(20);
                 didSomething = true;
             }
             case 2 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     didSomething |= addTempMobEffect(otherPlayer,ModMobEffects.HEALTH_SINKING,0,20 *20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 3 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
-                    didSomething |= addTempMobEffect(player,MobEffects.POISON,0,20 *20);
+                    didSomething |= addTempMobEffect(user,MobEffects.POISON,0,20 *20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 4 -> {
-                didSomething |= addTempMobEffect(player,good,1,30 * 20);
+                didSomething |= addTempMobEffect(user,good,1,30 * 20);
             }
             case 5 -> {
-                didSomething |= addAttributeSafely(player, Attributes.MAX_HEALTH,new AttributeModifier(uuid,"Regen elixir",10, AttributeModifier.Operation.ADDITION));
+                didSomething |= addAttributeSafely(user, Attributes.MAX_HEALTH,new AttributeModifier(uuid,"Regen elixir",10, AttributeModifier.Operation.ADDITION));
             }
         }
         return didSomething;

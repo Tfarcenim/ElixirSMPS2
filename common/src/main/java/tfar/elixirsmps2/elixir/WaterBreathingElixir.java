@@ -49,39 +49,39 @@ public class WaterBreathingElixir extends Elixir {
     }
 
     @Override
-    protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+    protected boolean actuallyApplyActiveEffects(ServerPlayer user, int key) {
         boolean didSomething = false;
         switch (key) {
             case 0 -> {
-                didSomething |= addMobEffect(player,good,0);
+                didSomething |= addMobEffect(user,good,0);
             }
             case 1 -> {
-                didSomething |= addMobEffect(player,MobEffects.CONDUIT_POWER,0);
+                didSomething |= addMobEffect(user,MobEffects.CONDUIT_POWER,0);
             }
             case 2 -> {
-                List<Player> nearby = getNearbyPlayers(player);
+                List<Player> nearby = getNearbyPlayers(user);
                 for (Player otherPlayer:nearby) {
                     didSomething |= addTempMobEffect(otherPlayer,MobEffects.DIG_SLOWDOWN,0,15 * 20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 3 -> {
-                List<ServerPlayer> nearby = player.server.getPlayerList().getPlayers();
-                for (Player otherPlayer:nearby) {
-                    didSomething |= addTempMobEffect(player, ModMobEffects.FREEZING,0,15 * 20);
-                    notifyAbilityHit((ServerPlayer) otherPlayer,key);
+                List<ServerPlayer> nearby = user.server.getPlayerList().getPlayers();
+                for (ServerPlayer otherPlayer:nearby) {
+                    didSomething |= addTempMobEffect(otherPlayer, ModMobEffects.FREEZING,0,15 * 20);
+                    notifyAbilityHit(otherPlayer,key);
                 }
             }
             case 4 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.forCombat().selector(Entity::isInWater),player,player.getBoundingBox().inflate(10));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.forCombat().selector(Entity::isInWater), user, user.getBoundingBox().inflate(10));
                 for (Player otherPlayer:nearby) {
-                    didSomething |= addTempMobEffect(player,MobEffects.POISON,0,15 * 20);
+                    didSomething |= addTempMobEffect(otherPlayer,MobEffects.POISON,0,15 * 20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 5 -> {
-                if (player.isInWater()) {
-                    didSomething |= addTempMobEffect(player,MobEffects.REGENERATION,0,15 * 20);
+                if (user.isInWater()) {
+                    didSomething |= addTempMobEffect(user,MobEffects.REGENERATION,0,15 * 20);
                 }
             }
         }

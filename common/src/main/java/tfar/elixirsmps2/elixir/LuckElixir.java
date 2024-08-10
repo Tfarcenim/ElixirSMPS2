@@ -59,21 +59,21 @@ public class LuckElixir extends Elixir {
     }
 
     @Override
-    protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+    protected boolean actuallyApplyActiveEffects(ServerPlayer user, int key) {
         boolean didSomething = false;
         switch (key) {
             case 0 -> {
-                addMobEffect(player,good,1);
+                addMobEffect(user,good,1);
             }
             case 1 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     didSomething |= giveRandomBadEffect(otherPlayer);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
             case 2 -> {
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     removeNonElixirPositiveEffects(otherPlayer);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
@@ -81,22 +81,22 @@ public class LuckElixir extends Elixir {
                 }
             }
             case 3 -> {
-                removeSomeEffects(player,MobEffectCategory.HARMFUL);
+                removeSomeEffects(user,MobEffectCategory.HARMFUL);
                 didSomething = true;
             }
             case 4 -> {
-                Player otherPlayer = getNearestPlayer(player);
+                Player otherPlayer = getNearestPlayer(user);
                 if (otherPlayer != null) {
-                    PlayerDuck playerDuck = PlayerDuck.of(player);
+                    PlayerDuck playerDuck = PlayerDuck.of(user);
                     PlayerDuck otherPlayerDuck = PlayerDuck.of(otherPlayer);
                     playerDuck.setAlternativeElixir(otherPlayerDuck.getElixir());
-                    addTempMobEffect(player, ModMobEffects.USE_ALT_ELIXIR,0,20 * 20);
+                    addTempMobEffect(user, ModMobEffects.USE_ALT_ELIXIR,0,20 * 20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                     didSomething = true;
                 }
             }
             case 5 -> {
-                didSomething |= addTempMobEffect(player,MobEffects.HEALTH_BOOST,player.getRandom().nextInt(5),20 * 30);
+                didSomething |= addTempMobEffect(user,MobEffects.HEALTH_BOOST, user.getRandom().nextInt(5),20 * 30);
             }
         }
         return didSomething;
@@ -122,6 +122,10 @@ public class LuckElixir extends Elixir {
     protected static boolean giveRandomBadEffect(Player player) {
         List<MobEffect> effects = BuiltInRegistries.MOB_EFFECT.stream().filter(effect -> effect.getCategory() == MobEffectCategory.HARMFUL).filter(effect -> effect != MobEffects.HUNGER).toList();
         MobEffect random = effects.get(player.getRandom().nextInt(effects.size()));
+        if (random.isInstantenous()) {
+            random.applyInstantenousEffect(null, null, player, 0, 1);
+            return true;
+        }
         return addTempMobEffect(player,random,0,15 * 20);
     }
 

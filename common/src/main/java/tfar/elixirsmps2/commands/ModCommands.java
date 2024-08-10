@@ -38,13 +38,13 @@ public class ModCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("elixir")
                 .then(Commands.literal("start")
-                        .requires(requires(ELIXIR_START, 2))
+                        .requires(permissionNode(ELIXIR_START, 2))
                         .executes(ModCommands::start))
                 .then(Commands.literal("stop")
-                        .requires(requires(ELIXIR_STOP, 2))
+                        .requires(permissionNode(ELIXIR_STOP, 2))
                         .executes(ModCommands::stop))
                 .then(Commands.literal("ep")
-                        .requires(requires(ELIXIR_EP, 2))
+                        .requires(permissionNode(ELIXIR_EP, 2))
                         .then(Commands.literal("add").then(Commands.argument("player", EntityArgument.player()).then(Commands.argument("ep", IntegerArgumentType.integer()).executes(ModCommands::epAdd))))
                         .then(Commands.literal("get")
                                 .then(Commands.argument("player", EntityArgument.player()).executes(ModCommands::epGet)))
@@ -54,7 +54,7 @@ public class ModCommands {
                                                 .executes(ModCommands::epSet))))
                 )
                 .then(Commands.literal("effect")
-                        .requires(requires(ELIXIR_EFFECT, 2))
+                        .requires(permissionNode(ELIXIR_EFFECT, 2))
                         .then(Commands.literal("get").then(Commands.argument("player", EntityArgument.player()).executes(ModCommands::effectGet)))
                         .then(Commands.literal("set").then(Commands.argument("player", EntityArgument.player())
                                 .then(Commands.argument("elixir", StringArgumentType.string()).executes(ModCommands::effectSet))))
@@ -62,7 +62,7 @@ public class ModCommands {
                         .then(Commands.literal("reroll").then(Commands.argument("player", EntityArgument.player()).executes(ModCommands::reroll)))
                 )
                 .then(Commands.literal("cooldown")
-                        .requires(requires(ELIXIR_COOLDOWN, 2))
+                        .requires(permissionNode(ELIXIR_COOLDOWN, 2))
                         .then(Commands.literal("reset").then(Commands.argument("player", EntityArgument.player()).executes(ModCommands::resetCooldowns)))
                 )
         );
@@ -182,7 +182,7 @@ public class ModCommands {
         return 1;
     }
 
-    public static Predicate<CommandSourceStack> requires(String node, int defaultValue) {
+    public static Predicate<CommandSourceStack> permissionNode(String node, int defaultValue) {
         return commandSourceStack -> Services.PLATFORM.checkBasicPermission(commandSourceStack, node, defaultValue);
     }
 

@@ -57,14 +57,14 @@ public class SpeedElixir extends Elixir {
     }
 
     @Override
-    protected boolean actuallyApplyActiveEffects(ServerPlayer player, int key) {
+    protected boolean actuallyApplyActiveEffects(ServerPlayer user, int key) {
         switch (key) {
             case 0 -> {
-                addMobEffect(player,good,2);
+                addMobEffect(user,good,2);
             }
             case 1 -> {
                 boolean didSomething = false;
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     didSomething |= otherPlayer.addEffect(new MobEffectInstance(bad,20 * 15,1));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
@@ -72,18 +72,18 @@ public class SpeedElixir extends Elixir {
                 return didSomething;
             }
             case 2 -> {
-                addTempMobEffect(player,good,2,20 * 15);
+                addTempMobEffect(user,good,2,20 * 15);
             }
             case 3 -> {
-                player.setDeltaMovement(player.getDeltaMovement().add(player.getLookAngle().scale(2)));
-                player.hurtMarked = true;
+                user.setDeltaMovement(user.getDeltaMovement().add(user.getLookAngle().scale(2)));
+                user.hurtMarked = true;
             }
             case 4 -> {
-                return addTempMobEffect(player,MobEffects.DIG_SPEED,1,20 * 20);
+                return addTempMobEffect(user,MobEffects.DIG_SPEED,1,20 * 20);
             }
             case 5 -> {
                 boolean didSomething = false;
-                List<Player> nearby = player.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT,player,player.getBoundingBox().inflate(16));
+                List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
                     didSomething |= otherPlayer.addEffect(new MobEffectInstance(MobEffects.BLINDNESS,20 * 15,1));
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
