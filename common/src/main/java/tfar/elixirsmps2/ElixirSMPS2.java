@@ -1,7 +1,14 @@
 package tfar.elixirsmps2;
 
+import com.mojang.authlib.GameProfile;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.UserBanList;
+import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
@@ -65,6 +72,9 @@ public class ElixirSMPS2 {
             itemEntity.setUnlimitedLifetime();
             living.level().addFreshEntity(itemEntity);
             playerDuck.addElixirPoints(-1);
+            if (playerDuck.getElixirPoints() < -4) {
+                deathBan(serverPlayer);
+            }
         }
     }
 
@@ -75,6 +85,9 @@ public class ElixirSMPS2 {
     public static void onLogin(ServerPlayer player) {
         if (ENABLED) {
             PlayerDuck playerDuck = PlayerDuck.of(player);
+            if (playerDuck.getElixirPoints() < -4) {
+                playerDuck.setElixirPoints(0);
+            }
             Elixir elixir = playerDuck.getElixir();
             if (elixir == null) {
                 ModCommands.reroll(player);
@@ -174,6 +187,38 @@ public class ElixirSMPS2 {
             }
         }
     }
+
+    public static final MutableComponent DEATH_BAN_MESSAGE = Component.empty()
+            .append(Component.literal("You are death banned!").withStyle(ChatFormatting.RED))
+            .append("\n")
+            .append("\n")
+            .append(Component.literal("Try to get someone to revive you!"));
+
+    public static void deathBan(ServerPlayer player) {
+
+
+        MutableComponent append = Component.empty()
+                .append(Component.literal("You are death banned!").withStyle(ChatFormatting.RED));
+
+
+        UserBanList userbanlist = player.getServer().getPlayerList().getBans();
+        GameProfile gameprofile = player.getGameProfile();
+        CommandSourceStack commandSourceStack = player.getServer().createCommandSourceStack();
+
+        UserBanListEntry userbanlistentry = new UserBanListEntry(
+                gameprofile, null, commandSourceStack.getTextName(), null, DEATHBAN.getString());
+        userbanlist.add(userbanlistentry);
+        commandSourceStack.sendSuccess(
+                () -> Component.translatable("commands.ban.success", Component.literal(gameprofile.getName()), userbanlistentry.getReason()), true
+        );
+        player.connection.disconnect(append);
+    }
+
+    public static final MutableComponent DEATHBAN = Component.literal("deathbanned");
+
+
+
+
 }
 //Strength Elixir
 //Ep -3 is gives weakness 2 instead of weakness 1

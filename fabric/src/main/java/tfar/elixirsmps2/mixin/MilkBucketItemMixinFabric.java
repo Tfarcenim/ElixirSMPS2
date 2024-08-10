@@ -39,7 +39,7 @@ public class MilkBucketItemMixinFabric {
             return instance.removeAllEffects();
         }
     }
-    
+
     @Unique
     private boolean shouldRemove(MobEffectInstance effect, ItemStack curativeItem, Elixir elixir) {
         if (elixir.grants().contains(effect.getEffect())) return false;

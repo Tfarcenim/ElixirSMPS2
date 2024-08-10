@@ -88,7 +88,7 @@ public class RegenerationElixir extends Elixir {
             case 3 -> {
                 List<Player> nearby = user.serverLevel().getNearbyPlayers(TargetingConditions.DEFAULT, user, user.getBoundingBox().inflate(16));
                 for (Player otherPlayer:nearby) {
-                    didSomething |= addTempMobEffect(user,MobEffects.POISON,0,20 *20);
+                    didSomething |= addTempMobEffect(otherPlayer,MobEffects.POISON,0,20 *20);
                     notifyAbilityHit((ServerPlayer) otherPlayer,key);
                 }
             }
